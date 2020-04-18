@@ -1,0 +1,32 @@
+.h-screen {
+    height: 100vh;
+}
+.normal-case {
+    text-transform: none;
+}
+.left-1\/2 {
+    left: 50%;
+}
+.-translate-x-1\/2 {
+    transform: translateX(-50%);
+}
+.leading-none {
+    line-height: 1;
+}
+.z-5 {
+    z-index: 5;
+}
+.rounded-b-none {
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.rounded-t {
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+}	
+.overflow-y-auto {
+    overflow-y: auto;
+}
+
+
+    
