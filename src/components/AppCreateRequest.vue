@@ -10,15 +10,15 @@
     </v-app-bar>
 
     <v-card tile>
-      <v-banner class="mx-auto relative" sticky app>
+      <v-banner class="mx-auto relative" v-model="banner" sticky app>
         <v-avatar slot="icon" color="primary" size="40">
           <v-icon class="grey--text text--darken-4" size="24">{{ mdiSatelliteVariant }}</v-icon>
         </v-avatar>Habilita la geolocalización del dispositivo para publicar tu solicitud en el mapa
         <template
           #actions
         >
-          <v-btn class="normal-case" color="primary" text>Despúes</v-btn>
-          <v-btn class="normal-case" color="primary" text>Habilitar</v-btn>
+          <v-btn class="normal-case" @click.stop="banner = !banner" color="primary" text>Despúes</v-btn>
+          <v-btn class="normal-case" @click.stop color="primary" text>Habilitar</v-btn>
         </template>
       </v-banner>
 
@@ -118,10 +118,13 @@ import {
   mdiHelpCircle
 } from "@mdi/js";
 
+import { createNamespacedHelpers } from "vuex";
+const { mapGetters } = createNamespacedHelpers("user");
+
 export default {
   data: () => ({
     person: {
-      name: "Maria Girardot",
+      name: null,
       phone: null,
       address: null,
       request: null,
@@ -143,6 +146,7 @@ export default {
       { text: "Los que puedan", color: "blue lighten-1", code: 4, emoji: "🙏🏼" }
     ],
     open: true,
+    banner: true,
     mdiClose,
     mdiSatelliteVariant,
     mdiCellphoneAndroid,
@@ -155,6 +159,12 @@ export default {
       import(
         /* webpackChunkName: "AppEnableGeolocation" */ "./AppEnableGeolocation"
       )
+  },
+  computed: {
+    ...mapGetters(["getName"])
+  },
+  mounted() {
+    this.person.name = this.getName;
   }
 };
 </script>
