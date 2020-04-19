@@ -6,11 +6,14 @@
         <v-icon left>{{ mdiInformation }}</v-icon>Acerca
       </v-btn>
       <v-spacer></v-spacer>
+
+      <app-account-menu v-if="isLoggedIn"></app-account-menu>
       <v-btn
+        v-else
         color="primary"
         class="grey--text text--darken-4 normal-case"
         :ripple="{ 'class': 'white--text' }"
-        @click.stop="showAppPersonCase"
+        @click="showAppLogin({ title: 'Inicia sesión' })"
       >Entrar</v-btn>
     </v-app-bar>
 
@@ -18,7 +21,7 @@
       color="primary"
       class="grey--text text--darken-4 normal-case left-1/2 -translate-x-1/2 z-5"
       :ripple="{ 'class': 'white--text' }"
-      @click.stop="showAppCreateRequest"
+      @click="showAppCreateRequest"
       elevation="24"
       fixed
       bottom
@@ -28,9 +31,17 @@
       <v-icon left>{{ mdiHumanGreeting }}</v-icon>Pedir ayuda
     </v-btn>
 
-    <app-login ref="login" v-if="isAppLoginShown"></app-login>
+    <app-login
+      ref="login"
+      v-if="isAppLoginShown"
+      @login:success="onSuccessfulLogin"
+      @login:fail="onFailLogin"
+      :title="appLoginTitle"
+      :createRequestAfterLogin="createRequestAfterLogin"
+    ></app-login>
     <app-create-request ref="createRequest" v-if="isAppCreateRequestShown"></app-create-request>
     <app-person-case ref="personCase" v-if="isPersonCaseShown" :person="person"></app-person-case>
+    <v-snackbar v-model="showSnack" left>{{ snackMessage }}</v-snackbar>
     <!-- <mapbox-gl></mapbox-gl> -->
   </v-app>
 </template>
@@ -39,27 +50,51 @@
 import { mdiInformation, mdiHumanGreeting } from "@mdi/js";
 import IsLoading from "../components/IsLoading";
 import IsError from "../components/IsError";
+import { createNamespacedHelpers } from "vuex";
+const { mapGetters } = createNamespacedHelpers("user");
 
 export default {
   data: () => ({
     isAppLoginShown: false,
-    isAppCreateRequestShown: false,
+    isAppCreateRequestShown: true,
     isPersonCaseShown: false,
+    showSnack: false,
+    snackMessage: "",
+    appLoginTitle: "",
+    createRequestAfterLogin: false,
     mdiInformation,
     mdiHumanGreeting
   }),
   methods: {
-    showAppLogin() {
+    showAppLogin({ title = "Inicia sesión", createRequestAfterLogin = false }) {
+      this.appLoginTitle = title;
+      this.createRequestAfterLogin = createRequestAfterLogin;
       this.isAppLoginShown = true;
       if ("login" in this.$refs) this.$refs.login.open = true;
     },
     showAppCreateRequest() {
+      if (!this.isLoggedIn) {
+        this.showAppLogin({
+          title: "Debes autenticarte para pedir ayuda",
+          createRequestAfterLogin: true
+        });
+        return;
+      }
       this.isAppCreateRequestShown = true;
       if ("createRequest" in this.$refs) this.$refs.createRequest.open = true;
     },
     showAppPersonCase() {
       this.isPersonCaseShown = true;
       if ("personCase" in this.$refs) this.$refs.personCase.open = true;
+    },
+    onSuccessfulLogin({ message, createRequestAfterLogin }) {
+      if (createRequestAfterLogin) this.showAppCreateRequest();
+      this.snackMessage = message;
+      this.showSnack = true;
+    },
+    onFailLogin(msg) {
+      this.snackMessage = msg;
+      this.showSnack = true;
     }
   },
   components: {
@@ -80,7 +115,19 @@ export default {
     AppPersonCase: () =>
       import(
         /* webpackChunkName: "AppPersonCase.vue" */ "../components/AppPersonCase"
+      ),
+    AppAccountMenu: () =>
+      import(
+        /* webpackChunkName: "AppAccountMenu.vue" */ "../components/AppAccountMenu"
       )
+  },
+  watch: {
+    isLoggedIn(val) {
+      if (!val) {
+        this.snackMessage = "Saliste de la aplicación";
+        this.showSnack = true;
+      }
+    }
   },
   computed: {
     person() {
@@ -104,7 +151,8 @@ export default {
         request:
           "Hola, soy una persona que desde el dia de febrero estoy sin trabajar la empresa donde trabajaba hasta el dia de hoy no me liquida y necesito para comer y pagar donde vivo soy una persona sola trabajaba para ayudarme con mis gastos y estoy sin trabajar no tengo ni plata para comer"
       };
-    }
+    },
+    ...mapGetters(["isLoggedIn"])
   }
 };
 </script>
