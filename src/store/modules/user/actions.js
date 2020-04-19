@@ -1,33 +1,37 @@
 import firebase from '../../../firebase'
 
-export const signInWithPopup = async context => {
+export const signInWithPopup = context => {
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().useDeviceLanguage();
-    try {
-        const { user: { displayName, email, photoURL } } = await firebase.auth().signInWithPopup(provider)
-        context.commit({
-            type: 'onSuccessfulLogin',
-            name: displayName,
-            email,
-            photoURL
-        })
-    } catch (error) {
-        console.log(error);
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        // The email of the user's account used.
-        var email = error.email;
-        // The firebase.auth.AuthCredential type that was used.
-        var credential = error.credential;
-    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            const { user: { displayName, email, photoURL } } = await firebase.auth().signInWithPopup(provider)
+            context.commit({
+                type: 'onSuccessfulLogin',
+                name: displayName,
+                email,
+                photoURL
+            })
+            return resolve('Autenticación exitosa')
+        } catch (error) {
+            switch (error.code) {
+                case 'auth/cancelled-popup-request':
+                    return reject('Demasiadas solicitudes de inicio de sesión')
+                    break;
+                case 'auth/popup-closed-by-user':
+                    return reject('Inicio de sesión cancelado')
+                    break;
+                case 'auth/popup-blocked':
+                    return reject('Operación bloqueada por el buscador')
+                    break;
+                default:
+                    return reject('Hubo un problema al iniciar sesión. Intenta nuevamente')
+            }
+        }
+    })
 }
 
 export const logout = async context => {
-    try {
-        await firebase.auth().signOut()
-        context.commit('onSignOut')
-    } catch (error) {
-        console.log(error);
-    }
+    await firebase.auth().signOut()
+    context.commit('onSignOut')
 }
