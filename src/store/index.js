@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import user from './modules/user'
-import { fetchCurrentUser } from '../plugins/fetchCurrentUser'
+import { fetchCurrentUser } from '../plugins/vuex/fetchCurrentUser'
 Vue.use(Vuex)
 
 export default new Vuex.Store({

@@ -1,4 +1,4 @@
-import firebase from '../firebase'
+import firebase from '../../firebase'
 
 export const fetchCurrentUser = (opts = {}) => {
     const namespace = opts.namespace || ''
