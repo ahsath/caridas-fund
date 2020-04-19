@@ -1,5 +1,6 @@
 import { onSuccessfulLogin, onSignOut } from './mutations'
 import { signInWithPopup, logout } from './actions'
+import { isLoggedIn, getPhotoURL, getName } from './getters'
 
 export default {
     namespaced: true,
@@ -18,5 +19,10 @@ export default {
     actions: {
         signInWithPopup,
         logout
+    },
+    getters: {
+        isLoggedIn,
+        getPhotoURL,
+        getName
     }
 }
