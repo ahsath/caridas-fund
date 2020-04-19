@@ -60,7 +60,11 @@
             </v-list-item-content>
             <v-list-item-action>
               <v-btn aria-label="Abrir comentarios" icon>
-                <v-icon class="text--secondary">{{ mdiUnfoldMoreHorizontal }}</v-icon>
+                <v-icon
+                  class="text--secondary"
+                  title="Ver comentarios"
+                  aria-label="Ver comentarios"
+                >{{ mdiUnfoldMoreHorizontal }}</v-icon>
               </v-btn>
             </v-list-item-action>
           </v-list-item>
