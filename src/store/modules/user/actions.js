@@ -12,20 +12,20 @@ export const signInWithPopup = context => {
                 email,
                 photoURL
             })
-            return resolve('Autenticación exitosa')
+            resolve('Autenticación exitosa')
         } catch (error) {
             switch (error.code) {
                 case 'auth/cancelled-popup-request':
-                    return reject('Demasiadas solicitudes de inicio de sesión')
+                    reject('Demasiadas solicitudes de inicio de sesión')
                     break;
                 case 'auth/popup-closed-by-user':
-                    return reject('Inicio de sesión cancelado')
+                    reject('Inicio de sesión cancelado')
                     break;
                 case 'auth/popup-blocked':
-                    return reject('Operación bloqueada por el buscador')
+                    reject('Operación bloqueada por el buscador')
                     break;
                 default:
-                    return reject('Hubo un problema al iniciar sesión. Intenta nuevamente')
+                    reject('Hubo un problema al iniciar sesión. Intenta nuevamente')
             }
         }
     })
