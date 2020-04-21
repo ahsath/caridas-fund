@@ -1,0 +1,1 @@
+export default (success, err) => navigator.geolocation.getCurrentPosition(success, err)
