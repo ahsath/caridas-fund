@@ -1,6 +1,6 @@
 import firebase from '../../firebase'
 
-export const fetchCurrentUser = (opts = {}) => {
+export default (opts = {}) => {
     const namespace = opts.namespace || ''
     return store => {
         const unsubscribe = firebase.auth().onAuthStateChanged(user => {
