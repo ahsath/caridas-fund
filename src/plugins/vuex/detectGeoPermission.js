@@ -8,11 +8,9 @@ export default store => {
             store.commit('updateGeoPermission', result.state)
             result.addEventListener('change', () => store.commit('updateGeoPermission', result.state))
         },
-        geoCoords: geoPos => store.commit('updateLocation', {
+        geoCoords: geoPos => store.commit('updateGeoCoords', {
             lat: geoPos.coords.latitude,
-            long: geoPos.coords.longitude,
-            city: null,
-            country: null
+            long: geoPos.coords.longitude
         })
     })
 }
