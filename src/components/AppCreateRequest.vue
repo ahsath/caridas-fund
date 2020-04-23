@@ -7,10 +7,11 @@
       <v-toolbar-title>Pedir ayuda</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
-        class="normal-case"
+        color="primary"
+        class="grey--text text--darken-4 normal-case"
+        :ripple="{ 'class': 'white--text' }"
+        :disabled="!isGeoSupported || isGeoPermissionDenied || isPositionUnavailable || !isFormValid || !isGeoEnabled"
         @click="publish"
-        :disabled="!isGeoSupported || isGeoPermissionDenied || isPositionUnavailable"
-        text
       >Publicar</v-btn>
     </v-app-bar>
 
@@ -39,75 +40,76 @@
                 text
                 :icon="alert.icon"
               >{{ alert.msg }}</v-alert>
-            </v-col>
-          </v-row>
-          <v-row justify="center" dense>
-            <v-col cols="12" sm="10" md="6" lg="5" xl="4">
-              <v-text-field
-                v-model="person.name"
-                label="Nombre*"
-                hint="* Requerido"
-                outlined
-                clearable
-                required
-                persistent-hint
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row justify="center" dense>
-            <v-col cols="12" sm="10" md="6" lg="5" xl="4">
-              <v-text-field
-                v-model="person.phone"
-                label="Teléfono*"
-                hint="* Requerido"
-                prefix="+57"
-                placeholder="Teléfono de contacto"
-                :prepend-inner-icon="mdiCellphoneAndroid"
-                outlined
-                clearable
-                required
-                persistent-hint
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row justify="center" dense>
-            <v-col cols="12" sm="10" md="6" lg="5" xl="4">
-              <v-text-field
-                v-model="person.address"
-                label="Dirección*"
-                hint="* Requerido"
-                placeholder="Dirección corta"
-                :prepend-inner-icon="mdiMapMarker"
-                outlined
-                clearable
-                required
-                persistent-hint
-              ></v-text-field>
-              <v-icon v-if="getCityAndCountry" class="text--secondary" x-small>{{ mdiMapMarker }}</v-icon>
-              <v-icon v-else class="text--disabled" x-small>{{ mdiCrosshairsOff }}</v-icon>
-              <span
-                class="caption text--disabled ml-2"
-              >{{ getCityAndCountry || 'Ubicación desconocida' }}</span>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-2" dense>
-            <v-col cols="12" sm="10" md="6" lg="5" xl="4">
-              <v-textarea
-                v-model="person.request"
-                label="Tu caso*"
-                hint="* Requerido. Dile a las personas cómo pueden ayudarte proporcionando información de contacto, cuentas bancarias y/o direcciones"
-                placeholder="Explica tu caso"
-                counter="480"
-                outlined
-                clearable
-                required
-                persistent-hint
-                auto-grow
-              ></v-textarea>
-            </v-col>
-          </v-row>
-          <v-row justify="center" class="mt-2" dense>
-            <v-col cols="12" sm="10" md="6" lg="5" xl="4">
+              <v-form v-model="isFormValid" ref="form">
+                <v-text-field
+                  v-model="person.name"
+                  label="Nombre*"
+                  hint="* Requerido"
+                  outlined
+                  clearable
+                  required
+                  persistent-hint
+                  :rules="[
+                    name => !!name || 'Tu nombre es requerido',
+                    name => !!name && name.length <= 25 || 'El nombre debe tener 25 caracteres o menos'
+                  ]"
+                ></v-text-field>
+                <v-text-field
+                  class="mt-4"
+                  v-model="formatedPhoneNumber"
+                  label="Teléfono*"
+                  hint="* Requerido"
+                  :prefix="phonePrefix"
+                  placeholder="Teléfono de contacto"
+                  :prepend-inner-icon="mdiCellphoneAndroid"
+                  outlined
+                  clearable
+                  required
+                  persistent-hint
+                  :rules="[
+                    phone => !!phone || 'Tu teléfono es requerido',
+                    phone => !!phone && phone.length <= 16 || 'Número telefónico debe tener 16 caracteres o menos'
+                  ]"
+                ></v-text-field>
+                <v-text-field
+                  class="mt-4"
+                  v-model="person.address"
+                  label="Dirección*"
+                  hint="* Requerido"
+                  placeholder="Dirección corta"
+                  :prepend-inner-icon="mdiMapMarker"
+                  outlined
+                  clearable
+                  required
+                  persistent-hint
+                  :rules="[
+                  address => !!address || 'Tu dirección es requerida', 
+                  address => !!address && address.length <= 60 || 'La dirección debe tener 60 caracteres o menos'
+                ]"
+                ></v-text-field>
+                <!-- <v-icon v-if="getCityAndCountry" color="primary" x-small>{{ mdiMapMarker }}</v-icon>
+                <v-icon v-else class="text--disabled" x-small>{{ mdiCrosshairsOff }}</v-icon>
+                <span
+                  class="caption text--disabled ml-2"
+                >{{ getCityAndCountry || 'Ubicación desconocida' }}</span>-->
+                <v-textarea
+                  class="mt-4"
+                  v-model="person.request"
+                  label="Tu caso*"
+                  hint="* Requerido. Dile a las personas cómo pueden ayudarte proporcionando información de contacto, cuentas bancarias y/o direcciones"
+                  placeholder="Explica tu caso"
+                  counter="480"
+                  outlined
+                  clearable
+                  required
+                  auto-grow
+                  persistent-hint
+                  :rules="[
+                  request => !!request || 'Tu caso es requerido',
+                  request => !!request && request.length <= 480 || 'Tu caso debe tener 480 caracteres o menos'
+                ]"
+                ></v-textarea>
+              </v-form>
               <span class="font-weight-medium mr-2">Selecciona la prioridad de tu caso</span>
               <v-icon>{{ mdiHelpCircle }}</v-icon>
               <v-radio-group v-model="casePriorityCode">
@@ -129,6 +131,8 @@
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+import { AsYouType, getCountryCallingCode } from "libphonenumber-js/max";
 import {
   mdiClose,
   mdiSatelliteVariant,
@@ -140,19 +144,21 @@ import {
   mdiCrosshairsQuestion
 } from "@mdi/js";
 
-import { mapGetters, mapActions } from "vuex";
-
 export default {
   data: () => ({
+    isFormValid: false,
     person: {
-      name: null,
-      phone: null,
-      address: null,
-      request: null,
+      name: "",
+      address: "",
       casePriority: {
-        code: null,
-        text: null
-      }
+        code: 2,
+        text: "",
+        emoji: ""
+      },
+      phone: {
+        number: ""
+      },
+      request: ""
     },
     casePriorityCode: 2,
     casePriorities: [
@@ -175,6 +181,7 @@ export default {
     },
     showSnack: false,
     snackMessage: null,
+    formatedPhoneNumber: null,
     mdiClose,
     mdiSatelliteVariant,
     mdiCellphoneAndroid,
@@ -185,12 +192,15 @@ export default {
     mdiCrosshairsQuestion
   }),
   computed: {
-    ...mapGetters([
-      "user/getName",
-      "getCityAndCountry",
-      "isGeoEnabled",
-      "getGeoPermission"
-    ]),
+    ...mapGetters({
+      getName: "user/getName",
+      getPhotoURL: "user/getPhotoURL",
+      isGeoEnabled: "isGeoEnabled",
+      getGeoPermission: "getGeoPermission",
+      getCountryCode: "getCountryCode",
+      getCountry: "getCountry",
+      getCoords: "getCoords"
+    }),
     showAlert() {
       if (!this.isGeoSupported) {
         this.alert.msg =
@@ -232,6 +242,11 @@ export default {
     },
     showBanner() {
       return this.isGeoSupported === !this.isGeoEnabled;
+    },
+    phonePrefix() {
+      return this.getCountryCode
+        ? `+${getCountryCallingCode(this.getCountryCode)}`
+        : "";
     }
   },
   watch: {
@@ -249,15 +264,43 @@ export default {
             break;
         }
       }
+    },
+    formatedPhoneNumber(rawNumber) {
+      if (this.getCountryCode) {
+        this.formatedPhoneNumber = new AsYouType(this.getCountryCode).input(
+          rawNumber
+        );
+        this.person.phone.number = this.formatedPhoneNumber;
+      } else {
+        this.person.phone.number = rawNumber;
+      }
     }
   },
   methods: {
     ...mapActions(["enableGeolocation"]),
     publish() {
-      if (this.isGeoEnabled) {
+      if (this.$refs.form.validate()) {
+        if (this.isGeoEnabled) {
+          const person = {
+            // publishDate,
+            name: this.person.name,
+            photoURL: this.getPhotoURL,
+            address: this.person.address,
+            country: this.getCountry || "",
+            countryCode: this.countryCode || "",
+            casePriority: this.person.casePriority,
+            phone: this.person.phone.number,
+            request: this.person.request,
+            location: {
+              lat: this.getCoords.lat,
+              long: this.getCoords.long
+            }
+          };
+          return;
+        }
+        this.snackMessage = "Habilita la geolocalización para publicar";
+        this.showSnack = true;
       }
-      this.snackMessage = "Habilita la geolocalización para publicar";
-      this.showSnack = true;
     }
   },
   mounted() {
