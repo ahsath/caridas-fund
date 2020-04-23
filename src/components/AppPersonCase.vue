@@ -20,13 +20,11 @@
             aria-label="Llamar a este número"
           >
             <v-list-item-icon>
-              <v-icon
-                class="text--secondary"
-              >{{ `${person.phone.type === 'MOBILE' ? mdiCellphoneAndroid : mdiPhone}` }}</v-icon>
+              <v-icon class="text--secondary">{{ mdiCellphoneAndroid }}</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>{{ person.phone.international }}</v-list-item-title>
-              <v-list-item-subtitle>{{ `${person.phone.type === 'MOBILE' ? 'Teléfono móvil' : 'Teléfono fijo'}` }}</v-list-item-subtitle>
+              <v-list-item-subtitle>Teléfono</v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
               <v-btn
@@ -46,7 +44,7 @@
             </v-list-item-icon>
             <v-list-item-content>
               <v-list-item-title>{{ person.address }}</v-list-item-title>
-              <v-list-item-subtitle>{{ person.city }}, {{ person.country }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ person.country }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
           <v-divider></v-divider>
@@ -85,7 +83,6 @@
 
 <script>
 import {
-  mdiPhone,
   mdiCellphoneAndroid,
   mdiMapMarker,
   mdiCallMade,
@@ -101,7 +98,6 @@ export default {
   },
   data: () => ({
     open: true,
-    mdiPhone,
     mdiCellphoneAndroid,
     mdiMapMarker,
     mdiCallMade,
