@@ -6,9 +6,9 @@ export default {
     namespaced: true,
     state: {
         user: {
-            name: null,
-            email: null,
-            photoURL: null,
+            name: "",
+            email: "",
+            photoURL: "",
             isLoggedIn: false,
         }
     },
