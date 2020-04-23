@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <div>
     <v-app-bar app>
       <v-toolbar-title>Caridas</v-toolbar-title>
       <v-btn to="/acerca" tag="a" class="text--secondary normal-case ml-4" text>
@@ -43,15 +43,14 @@
     <app-person-case ref="personCase" v-if="isPersonCaseShown" :person="person"></app-person-case>
     <v-snackbar v-model="showSnack" left>{{ snackMessage }}</v-snackbar>
     <!-- <mapbox-gl></mapbox-gl> -->
-  </v-app>
+  </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import { mdiInformation, mdiHumanGreeting } from "@mdi/js";
 import IsLoading from "../components/IsLoading";
 import IsError from "../components/IsError";
-import { createNamespacedHelpers } from "vuex";
-const { mapGetters } = createNamespacedHelpers("user");
 
 export default {
   data: () => ({
@@ -130,6 +129,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      isLoggedIn: "user/isLoggedIn",
+      getGeoPermission: "getGeoPermission"
+    }),
     person() {
       return {
         photoURL: "https://i.pravatar.cc/200",
@@ -138,21 +141,19 @@ export default {
         address: "Cra. 115B. CL. 64E",
         location: [90, -90],
         country: "Colombia",
-        city: "Medellín",
+        city: "",
         casePriority: {
           code: 1,
           text: "Emergencia",
           emoji: "🚨"
         },
         phone: {
-          international: "+57 310 4892658",
-          type: "MOBILE"
+          international: "+57 310 4892658"
         },
         request:
           "Hola, soy una persona que desde el dia de febrero estoy sin trabajar la empresa donde trabajaba hasta el dia de hoy no me liquida y necesito para comer y pagar donde vivo soy una persona sola trabajaba para ayudarme con mis gastos y estoy sin trabajar no tengo ni plata para comer"
       };
-    },
-    ...mapGetters(["isLoggedIn"])
+    }
   }
 };
 </script>
