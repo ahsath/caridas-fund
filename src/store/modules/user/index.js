@@ -1,28 +1,45 @@
-import { onSuccessfulLogin, onSignOut } from './mutations'
-import { signInWithPopup, logout } from './actions'
-import { isLoggedIn, getPhotoURL, getName } from './getters'
+import { setUserData, clearUserInfo, updateCountry, updateCountryCode, updateGeoCoords } from './mutations'
+import { setCountry, setCountryCode } from './actions'
+import { getUserPhotoURL, getUserName, getUserPhoneNumber, getUserAddress, getUserRequest, getCountryCode, getCountry, getCoordinates } from './getters'
 
 export default {
     namespaced: true,
     state: {
-        user: {
-            name: "",
-            email: "",
-            photoURL: "",
-            isLoggedIn: false,
-        }
+        uid: '',
+        timestamp: '',
+        name: '',
+        photoURL: '',
+        address: '',
+        country: '',
+        countryCode: '',
+        casePriority: '',
+        phoneNumber: '',
+        request: '',
+        coordinates: {
+            lat: 0,
+            lng: 0
+        },
+        email: ''
     },
     mutations: {
-        onSuccessfulLogin,
-        onSignOut
+        setUserData,
+        clearUserInfo,
+        updateCountry,
+        updateCountryCode,
+        updateGeoCoords
     },
     actions: {
-        signInWithPopup,
-        logout
+        setCountry,
+        setCountryCode
     },
     getters: {
-        isLoggedIn,
-        getPhotoURL,
-        getName
+        getUserPhotoURL,
+        getUserName,
+        getUserPhoneNumber,
+        getUserAddress,
+        getUserRequest,
+        getCountryCode,
+        getCountry,
+        getCoordinates
     }
 }
