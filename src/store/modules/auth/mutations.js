@@ -1,0 +1,1 @@
+export const setUserLoggedInStatus = (state, status) => state.isUserLoggedIn = status
