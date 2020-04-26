@@ -1,29 +1,19 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import user from './modules/user'
-import fetchCurrentUser from '../plugins/vuex/fetchCurrentUser'
-import detectGeoPermission from '../plugins/vuex/detectGeoPermission'
-import dispatchActions from '../plugins/vuex/dispatchActions'
+import db from './modules/db'
+import auth from './modules/auth'
+import initStore from '../plugins/vuex/initStore'
 import getGeoCoords from '../helpers/getGeoCoords'
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  plugins: [fetchCurrentUser({ namespace: 'user/' }), detectGeoPermission, dispatchActions],
-  modules: {
-    user
-  },
+  plugins: [initStore],
   state: {
-    location: {
-      coords: {
-        lat: 0,
-        long: 0
-      },
-      country: "",
-      countryCode: ""
-    },
     geoEnabled: false,
     geoPermission: null,
+    networkConnection: 'online',
     casePriorities: [
       { text: "Emergencia", color: "red lighten-1", code: 1, emoji: "🚨" },
       { text: "Crítico", color: "orange lighten-1", code: 2, emoji: "🔥" },
@@ -36,20 +26,22 @@ export default new Vuex.Store({
       { text: "Los que puedan", color: "blue lighten-1", code: 4, emoji: "🙏🏼" }
     ],
   },
+  modules: {
+    auth,
+    db,
+    user
+  },
   mutations: {
-    updateGeoCoords: (state, { lat, long }) => {
-      state.location.coords.lat = lat
-      state.location.coords.long = long
-    },
-    updateCountry: (state, country) => state.location.country = country,
-    updateCountryCode: (state, countryCode) => state.location.countryCode = countryCode,
-    updateGeoPermission: (state, permission) => state.geoPermission = permission
+    updateGeoPermission: (state, permission) => state.geoPermission = permission,
+    updateNetworkConnection: (state, networkStatus) => state.networkConnection = networkStatus,
+    updateAgentCountry: (state, countryName) => state.agentCountry = countryName,
+    updateAgentCountryCode: (state, countryCode) => state.agentCountryCode = countryCode
   },
   actions: {
     enableGeolocation: ({ commit }) => {
       if ('geolocation' in navigator) getGeoCoords(geoPosSuccess, geoPosError)
       function geoPosSuccess(geoPos) {
-        commit('updateGeoCoords', { lat: geoPos.coords.latitude, long: geoPos.coords.longitude })
+        commit('user/updateGeoCoords', { lat: geoPos.coords.latitude, lng: geoPos.coords.longitude })
         commit('updateGeoPermission', 'granted')
       }
       function geoPosError(geoPosErr) {
@@ -60,18 +52,6 @@ export default new Vuex.Store({
           case 2:
             commit('updateGeoPermission', 'POSITION_UNAVAILABLE')
             break;
-        }
-      }
-    },
-    detectUserLocationInfo: async ({ commit, getters, rootGetters }) => {
-      if (!rootGetters["user/isLoggedIn"]) {
-        const res = await fetch("https://freegeoip.app/json/");
-        const data = await res.json()
-        const { country_name, country_code, latitude, longitude } = data
-        commit('updateCountry', country_name)
-        commit('updateCountryCode', country_code)
-        if (getters.getGeoPermission === "prompt" || getters.getGeoPermission === "denied") {
-          commit('updateGeoCoords', { lat: latitude, long: longitude })
         }
       }
     }
@@ -86,8 +66,7 @@ export default new Vuex.Store({
           return false
       }
     },
-    getCountryCode: ({ location: { countryCode } }) => countryCode,
-    getCountry: ({ location: { country } }) => country,
-    getCoords: ({ location }) => location.coords,
+    getNetworkConnection: ({ networkConnection }) => networkConnection,
+    getPriorityCases: ({ casePriorities }) => casePriorities,
   },
 })
