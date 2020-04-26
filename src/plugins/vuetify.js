@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify/lib';
 import es from 'vuetify/es5/locale/es';
 import IconGoogleG from '../components/IconGoogleG.vue'
+import AppLogo from '../components/AppLogo.vue'
 
 Vue.use(Vuetify);
 
@@ -23,6 +24,9 @@ export default new Vuetify({
     values: {
       google: {
         component: IconGoogleG
+      },
+      logo: {
+        component: AppLogo
       }
     }
   },
