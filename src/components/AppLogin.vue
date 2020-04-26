@@ -29,8 +29,7 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapActions } = createNamespacedHelpers("user");
+import { mapActions } from "vuex";
 
 export default {
   props: {
