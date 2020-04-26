@@ -1,7 +1,12 @@
 <template>
-  <div>
+  <div class="h-min-height">
     <v-app-bar app>
-      <v-toolbar-title>Caridas</v-toolbar-title>
+      <v-toolbar-title>
+        <router-link to="/" class="d-flex align-center no-underline">
+          <v-icon color="primary" x-large>$vuetify.icons.values.logo</v-icon>
+          <span class="ml-2 font-weight-bold white--text">Caridas</span>
+        </router-link>
+      </v-toolbar-title>
       <v-btn to="/acerca" tag="a" class="text--secondary normal-case ml-4" text>
         <v-icon left>{{ mdiInformation }}</v-icon>Acerca
       </v-btn>
@@ -42,7 +47,7 @@
     <app-create-request ref="createRequest" v-if="isAppCreateRequestShown"></app-create-request>
     <app-person-case ref="personCase" v-if="isPersonCaseShown" :person="person"></app-person-case>
     <v-snackbar v-model="showSnack" left>{{ snackMessage }}</v-snackbar>
-    <!-- <mapbox-gl></mapbox-gl> -->
+    <l-map></l-map>
   </div>
 </template>
 
@@ -55,7 +60,7 @@ import IsError from "../components/IsError";
 export default {
   data: () => ({
     isAppLoginShown: false,
-    isAppCreateRequestShown: true,
+    isAppCreateRequestShown: false,
     isPersonCaseShown: false,
     showSnack: false,
     snackMessage: "",
@@ -97,9 +102,9 @@ export default {
     }
   },
   components: {
-    MapboxGl: () => ({
+    LMap: () => ({
       component: import(
-        /* webpackChunkName: "MapboxGL.vue" */ "../components/MapboxGL"
+        /* webpackChunkName: "LMap.vue" */ "../components/LMap"
       ),
       loading: IsLoading,
       error: IsError,
@@ -130,7 +135,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isLoggedIn: "user/isLoggedIn",
+      isLoggedIn: "isUserLoggedIn",
       getGeoPermission: "getGeoPermission"
     }),
     person() {
