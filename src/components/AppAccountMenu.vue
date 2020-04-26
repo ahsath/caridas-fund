@@ -3,7 +3,7 @@
     <template #activator="{ on }">
       <v-btn v-on="on" icon>
         <v-avatar size="40">
-          <img :src="getPhotoURL" :alt="getName" />
+          <img :src="getUserPhotoURL" :alt="getUserName" />
         </v-avatar>
       </v-btn>
     </template>
@@ -22,15 +22,14 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from "vuex";
-const { mapGetters, mapActions } = createNamespacedHelpers("user");
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   methods: {
     ...mapActions(["logout"])
   },
   computed: {
-    ...mapGetters(["getPhotoURL", "getName"])
+    ...mapGetters("user", ["getUserPhotoURL", "getUserName"])
   }
 };
 </script>
