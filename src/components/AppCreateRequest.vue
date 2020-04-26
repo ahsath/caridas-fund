@@ -10,7 +10,7 @@
         color="primary"
         class="grey--text text--darken-4 normal-case"
         :ripple="{ 'class': 'white--text' }"
-        :disabled="!isGeoSupported || isGeoPermissionDenied || isPositionUnavailable || !isFormValid || !isGeoEnabled"
+        :disabled="!isGeoSupported || isGeoPermissionDenied || isPositionUnavailable || !isFormValid || !isGeoEnabled || getNetworkConnection === 'offline'"
         @click="publish"
       >Publicar</v-btn>
     </v-app-bar>
@@ -56,7 +56,7 @@
                 ></v-text-field>
                 <v-text-field
                   class="mt-4"
-                  v-model="formatedPhoneNumber"
+                  v-model="person.phoneNumber"
                   label="Teléfono*"
                   hint="* Requerido"
                   :prefix="phonePrefix"
@@ -114,7 +114,7 @@
               <v-icon>{{ mdiHelpCircle }}</v-icon>
               <v-radio-group v-model="casePriorityCode">
                 <v-radio
-                  v-for="({ text, color, code }, i) in casePriorities"
+                  v-for="({ text, color, code }, i) in getPriorityCases"
                   :key="i"
                   :label="text"
                   :value="code"
@@ -141,8 +141,17 @@ import {
   mdiHelpCircle,
   mdiMapMarkerOff,
   mdiCrosshairsOff,
-  mdiCrosshairsQuestion
+  mdiCrosshairsQuestion,
+  mdiCloudAlert
 } from "@mdi/js";
+import { getTime, formatDistanceStrict } from "date-fns";
+import { es } from "date-fns/locale";
+// const dateNow = getTime(new Date());
+
+// const distanceInWords = formatDistanceStrict(1587775243117, new Date(), {
+//   addSuffix: true,
+//   locale: es
+// });
 
 export default {
   data: () => ({
@@ -150,28 +159,11 @@ export default {
     person: {
       name: "",
       address: "",
-      casePriority: {
-        code: 2,
-        text: "",
-        emoji: ""
-      },
-      phone: {
-        number: ""
-      },
-      request: ""
+      phoneNumber: "",
+      request: "",
+      phoneNumber: ""
     },
     casePriorityCode: 2,
-    casePriorities: [
-      { text: "Emergencia", color: "red lighten-1", code: 1, emoji: "🚨" },
-      { text: "Crítico", color: "orange lighten-1", code: 2, emoji: "🔥" },
-      {
-        text: "Puedo esperar",
-        color: "yellow  lighten-1",
-        code: 3,
-        emoji: "🥺"
-      },
-      { text: "Los que puedan", color: "blue lighten-1", code: 4, emoji: "🙏🏼" }
-    ],
     open: true,
     alert: {
       type: null,
@@ -179,9 +171,9 @@ export default {
       color: null,
       icon: null
     },
+    formatedPhoneNumber: "",
     showSnack: false,
     snackMessage: null,
-    formatedPhoneNumber: null,
     mdiClose,
     mdiSatelliteVariant,
     mdiCellphoneAndroid,
@@ -189,17 +181,23 @@ export default {
     mdiHelpCircle,
     mdiMapMarkerOff,
     mdiCrosshairsOff,
-    mdiCrosshairsQuestion
+    mdiCrosshairsQuestion,
+    mdiCloudAlert
   }),
   computed: {
     ...mapGetters({
-      getName: "user/getName",
-      getPhotoURL: "user/getPhotoURL",
+      getUserName: "user/getUserName",
+      getUserPhotoURL: "user/getUserPhotoURL",
+      getUserPhoneNumber: "user/getUserPhoneNumber",
+      getUserRequest: "user/getUserRequest",
+      getUserAddress: "user/getUserAddress",
+      getCountryCode: "user/getCountryCode",
+      getCountry: "user/getCountry",
+      getCoords: "user/getCoordinates",
       isGeoEnabled: "isGeoEnabled",
       getGeoPermission: "getGeoPermission",
-      getCountryCode: "getCountryCode",
-      getCountry: "getCountry",
-      getCoords: "getCoords"
+      getNetworkConnection: "getNetworkConnection",
+      getPriorityCases: "getPriorityCases"
     }),
     showAlert() {
       if (!this.isGeoSupported) {
@@ -212,7 +210,7 @@ export default {
       }
       if (this.isGeoPermissionDenied) {
         this.alert.msg =
-          "Has bloqueado el acceso a tu ubicación. Para habilitarlo nuevamente, ve a la configuración de tu navegador ⚙️";
+          "Has bloqueado el acceso a tu ubicación. Para habilitarlo nuevamente, toca el candado en tu navegador 🔒";
         this.alert.type = "error";
         this.alert.color = "red lighten-3";
         this.alert.icon = this.mdiCrosshairsOff;
@@ -220,10 +218,17 @@ export default {
       }
       if (this.isPositionUnavailable) {
         this.alert.msg =
-          "No pudimos obtener tu ubicación. Intenta nuevamente actualizando tu navegador o habilitando la ubicación en tu dispositivo";
+          "La geolocalización esta habilitada pero no pudimos obtener tu ubicación. Asegurate de estar conectado a internet, intenta nuevamente actualizando tu navegador o habilita la ubicación en tu dispositivo";
         this.alert.type = "error";
         this.alert.color = "red lighten-3";
         this.alert.icon = this.mdiCrosshairsQuestion;
+        return true;
+      }
+      if (this.getNetworkConnection === "offline") {
+        this.alert.msg = "Sin conexión a internet";
+        this.alert.type = "error";
+        this.alert.color = "red lighten-3";
+        this.alert.icon = this.mdiCloudAlert;
         return true;
       }
       return false;
@@ -265,14 +270,30 @@ export default {
         }
       }
     },
-    formatedPhoneNumber(rawNumber) {
+    "person.phoneNumber"(rawNumber) {
+      // to do: maybe check if number is valid?
       if (this.getCountryCode) {
-        this.formatedPhoneNumber = new AsYouType(this.getCountryCode).input(
-          rawNumber
-        );
-        this.person.phone.number = this.formatedPhoneNumber;
+        if (rawNumber) {
+          this.person.phoneNumber = new AsYouType(this.getCountryCode).input(
+            rawNumber
+          );
+        } else {
+          this.person.phoneNumber = rawNumber;
+        }
       } else {
-        this.person.phone.number = rawNumber;
+        this.person.phoneNumber = rawNumber;
+      }
+    },
+    getNetworkConnection(status) {
+      switch (status) {
+        case "online":
+          this.snackMessage = "De nuevo en línea";
+          this.showSnack = true;
+          break;
+        case "offline":
+          this.snackMessage = "Sin conexion a internet";
+          this.showSnack = true;
+          break;
       }
     }
   },
@@ -281,22 +302,21 @@ export default {
     publish() {
       if (this.$refs.form.validate()) {
         if (this.isGeoEnabled) {
+          // person help request object
           const person = {
-            // publishDate,
+            // uid<user's unique id>
+            // timestamp<date in milliseconds>
             name: this.person.name,
-            photoURL: this.getPhotoURL,
+            photoURL: this.getUserPhotoURL,
             address: this.person.address,
-            country: this.getCountry || "",
-            countryCode: this.countryCode || "",
-            casePriority: this.person.casePriority,
-            phone: this.person.phone.number,
-            request: this.person.request,
-            location: {
-              lat: this.getCoords.lat,
-              long: this.getCoords.long
-            }
+            country: this.getCountry,
+            countryCode: this.getCountryCode,
+            casePriority: this.casePriorityCode,
+            phoneNumber: this.person.phoneNumber,
+            request: this.person.request
+            // The coordinates field must be a GeoPoint!
+            // coordinates: new firebase.firestore.GeoPoint( this.getCoords.lat, this.getCoords.long)
           };
-          return;
         }
         this.snackMessage = "Habilita la geolocalización para publicar";
         this.showSnack = true;
@@ -304,7 +324,10 @@ export default {
     }
   },
   mounted() {
-    this.person.name = this.getName;
+    this.person.name = this.getUserName;
+    this.person.phoneNumber = this.getUserPhoneNumber;
+    this.person.address = this.getUserAddress;
+    this.person.request = this.getUserRequest;
   }
 };
 </script>
