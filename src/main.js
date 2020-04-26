@@ -8,6 +8,7 @@ import './sass/main.scss'
 import './assets/css/global.css'
 
 Vue.config.productionTip = false
+Vue.prototype.$vue = Vue
 
 new Vue({
   router,
