@@ -7,3 +7,6 @@ export const getUserRequest = ({ request }) => request
 export const getCountryCode = ({ countryCode }) => countryCode
 export const getCountry = ({ country }) => country
 export const getCoordinates = ({ coordinates }) => coordinates
+export const getUserCasePriorityCode = ({ casePriority }) => casePriority
+export const getUserUID = ({ uid }) => uid
+export const getTimestamp = ({ timestamp }) => timestamp
