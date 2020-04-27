@@ -1,0 +1,1 @@
+export const setUserDocId = (state, docId) => state.userDocId = docId 
