@@ -88,8 +88,8 @@ export default {
           this.setCountry(country_name);
           this.setCountryCode(country_code2);
         }
-      } catch (error) {
-        console.log(error);
+      } catch (e) {
+        console.log(e);
       }
     }
   },
