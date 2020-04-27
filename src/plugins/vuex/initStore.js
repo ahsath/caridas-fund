@@ -2,7 +2,7 @@ import firebase from '../../firebase'
 import getGeoCoords from '../../helpers/getGeoCoords'
 import queryGeoPermissions from '../../helpers/queryGeoPermissions'
 
-export default ({ commit, dispatch }) => {
+export default ({ commit }) => {
     const unsubscribe = firebase.auth().onAuthStateChanged(user => {
         if (user) {
             const { uid, displayName, email, photoURL } = user
@@ -13,7 +13,6 @@ export default ({ commit, dispatch }) => {
                 email,
                 photoURL
             })
-            dispatch('db/getUserData', user.uid)
         }
         unsubscribe()
     })
@@ -30,10 +29,7 @@ export default ({ commit, dispatch }) => {
     })
 
     commit('updateNetworkConnection', navigator.onLine ? 'online' : 'offline')
-
-    window.addEventListener('online', () => {
-        commit('updateNetworkConnection', 'online')
-    })
+    window.addEventListener('online', () => commit('updateNetworkConnection', 'online'))
     window.addEventListener('offline', () => commit('updateNetworkConnection', 'offline'))
 }
 
