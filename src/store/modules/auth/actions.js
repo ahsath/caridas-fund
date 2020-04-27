@@ -1,6 +1,6 @@
 import firebase from '../../../firebase'
 
-export const signInWithPopup = ({ commit, dispatch }) => {
+export const signInWithPopup = ({ commit }) => {
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().useDeviceLanguage();
     return new Promise(async (resolve, reject) => {
@@ -13,7 +13,6 @@ export const signInWithPopup = ({ commit, dispatch }) => {
                 photoURL
             })
             commit('setUserLoggedInStatus', true)
-            dispatch('db/getUserData', uid)
             resolve('Autenticación exitosa')
         } catch (error) {
             switch (error.code) {
@@ -36,5 +35,4 @@ export const signInWithPopup = ({ commit, dispatch }) => {
 export const logout = async ({ commit }) => {
     await firebase.auth().signOut()
     commit('setUserLoggedInStatus', false)
-    commit('user/clearUserInfo')
 }
