@@ -5,6 +5,7 @@ import db from './modules/db'
 import auth from './modules/auth'
 import initStore from '../plugins/vuex/initStore'
 import getGeoCoords from '../helpers/getGeoCoords'
+import firebase from '../firebase/'
 
 Vue.use(Vuex)
 
@@ -68,5 +69,6 @@ export default new Vuex.Store({
     },
     getNetworkConnection: ({ networkConnection }) => networkConnection,
     getPriorityCases: ({ casePriorities }) => casePriorities,
+    getFirebaseGeoPoint: (_, getters) => new firebase.firestore.GeoPoint(getters['user/getCoordinates'].lat, getters['user/getCoordinates'].lng)
   },
 })
