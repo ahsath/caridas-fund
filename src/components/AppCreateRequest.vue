@@ -1,18 +1,29 @@
 <template>
   <v-dialog v-model="open" fullscreen>
     <v-app-bar fixed>
-      <v-app-bar-nav-icon @click="open = false">
+      <v-app-bar-nav-icon @click="close">
         <v-icon>{{ mdiClose }}</v-icon>
       </v-app-bar-nav-icon>
       <v-toolbar-title>Pedir ayuda</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
+        v-if="isRequestPublished"
         color="primary"
         class="grey--text text--darken-4 normal-case"
         :ripple="{ 'class': 'white--text' }"
         :disabled="!isGeoSupported || isGeoPermissionDenied || isPositionUnavailable || !isFormValid || !isGeoEnabled || getNetworkConnection === 'offline'"
+        :loading="loading"
         @click="publish"
       >Publicar</v-btn>
+      <v-btn
+        v-else
+        color="primary"
+        class="grey--text text--darken-4 normal-case"
+        :ripple="{ 'class': 'white--text' }"
+        :disabled="!isGeoSupported || isGeoPermissionDenied || isPositionUnavailable || !isFormValid || !isGeoEnabled || getNetworkConnection === 'offline'"
+        :loading="loading"
+        @click="update"
+      >Actualizar</v-btn>
     </v-app-bar>
 
     <v-card tile>
@@ -49,6 +60,7 @@
                   clearable
                   required
                   persistent-hint
+                  :disabled="loading"
                   :rules="[
                     name => !!name || 'Tu nombre es requerido',
                     name => !!name && name.length <= 25 || 'El nombre debe tener 25 caracteres o menos'
@@ -66,6 +78,7 @@
                   clearable
                   required
                   persistent-hint
+                  :disabled="loading"
                   :rules="[
                     phone => !!phone || 'Tu teléfono es requerido',
                     phone => !!phone && phone.length <= 16 || 'Número telefónico debe tener 16 caracteres o menos'
@@ -82,6 +95,7 @@
                   clearable
                   required
                   persistent-hint
+                  :disabled="loading"
                   :rules="[
                   address => !!address || 'Tu dirección es requerida', 
                   address => !!address && address.length <= 60 || 'La dirección debe tener 60 caracteres o menos'
@@ -104,6 +118,7 @@
                   required
                   auto-grow
                   persistent-hint
+                  :disabled="loading"
                   :rules="[
                   request => !!request || 'Tu caso es requerido',
                   request => !!request && request.length <= 480 || 'Tu caso debe tener 480 caracteres o menos'
@@ -119,6 +134,7 @@
                   :label="text"
                   :value="code"
                   :color="color"
+                  :disabled="loading"
                 ></v-radio>
               </v-radio-group>
             </v-col>
@@ -131,7 +147,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 import { AsYouType, getCountryCallingCode } from "libphonenumber-js/max";
 import {
   mdiClose,
@@ -144,9 +160,8 @@ import {
   mdiCrosshairsQuestion,
   mdiCloudAlert
 } from "@mdi/js";
-import { getTime, formatDistanceStrict } from "date-fns";
+import { getTime, formatDistanceStrict, isPast } from "date-fns";
 import { es } from "date-fns/locale";
-// const dateNow = getTime(new Date());
 
 // const distanceInWords = formatDistanceStrict(1587775243117, new Date(), {
 //   addSuffix: true,
@@ -163,6 +178,7 @@ export default {
       request: "",
       phoneNumber: ""
     },
+    loading: false,
     casePriorityCode: 2,
     open: true,
     alert: {
@@ -171,7 +187,6 @@ export default {
       color: null,
       icon: null
     },
-    formatedPhoneNumber: "",
     showSnack: false,
     snackMessage: null,
     mdiClose,
@@ -194,10 +209,14 @@ export default {
       getCountryCode: "user/getCountryCode",
       getCountry: "user/getCountry",
       getCoords: "user/getCoordinates",
+      getUserCasePriorityCode: "user/getUserCasePriorityCode",
+      getTimestamp: "user/getTimestamp",
+      getUserUID: "user/getUserUID",
+      firebaseGeoPoint: "getFirebaseGeoPoint",
+      getPriorityCases: "getPriorityCases",
       isGeoEnabled: "isGeoEnabled",
       getGeoPermission: "getGeoPermission",
-      getNetworkConnection: "getNetworkConnection",
-      getPriorityCases: "getPriorityCases"
+      getNetworkConnection: "getNetworkConnection"
     }),
     showAlert() {
       if (!this.isGeoSupported) {
@@ -252,6 +271,9 @@ export default {
       return this.getCountryCode
         ? `+${getCountryCallingCode(this.getCountryCode)}`
         : "";
+    },
+    isRequestPublished() {
+      return !!this.getTimestamp ? !isPast(this.getTimestamp) : true;
     }
   },
   watch: {
@@ -298,36 +320,104 @@ export default {
     }
   },
   methods: {
-    ...mapActions(["enableGeolocation"]),
-    publish() {
+    ...mapActions([
+      "enableGeolocation",
+      "saveUserRequest",
+      "updateUserRequest",
+      "getUserData"
+    ]),
+    ...mapMutations("user", ["updateTimestamp", "setUserData"]),
+    async publish() {
       if (this.$refs.form.validate()) {
         if (this.isGeoEnabled) {
-          // person help request object
-          const person = {
-            // uid<user's unique id>
-            // timestamp<date in milliseconds>
-            name: this.person.name,
-            photoURL: this.getUserPhotoURL,
-            address: this.person.address,
-            country: this.getCountry,
-            countryCode: this.getCountryCode,
-            casePriority: this.casePriorityCode,
-            phoneNumber: this.person.phoneNumber,
-            request: this.person.request
-            // The coordinates field must be a GeoPoint!
-            // coordinates: new firebase.firestore.GeoPoint( this.getCoords.lat, this.getCoords.long)
-          };
+          this.loading = true;
+          try {
+            this.snackMessage = await this.saveUserRequest(
+              this.getPersonData()
+            );
+            this.showSnack = true;
+            this.loading = false;
+          } catch (e) {
+            this.snackMessage = e;
+            this.showSnack = true;
+            this.loading = false;
+          }
+          return;
         }
         this.snackMessage = "Habilita la geolocalización para publicar";
         this.showSnack = true;
       }
+    },
+    async update() {
+      if (this.$refs.form.validate()) {
+        if (this.isGeoEnabled) {
+          this.loading = true;
+          try {
+            this.snackMessage = await this.updateUserRequest(
+              this.getPersonData()
+            );
+            this.showSnack = true;
+            this.loading = false;
+          } catch (e) {
+            this.snackMessage = e;
+            this.showSnack = true;
+            this.loading = false;
+          }
+          return;
+        }
+        this.snackMessage = "Habilita la geolocalización para publicar";
+        this.showSnack = true;
+      }
+    },
+    close() {
+      !this.loading && (this.open = false);
+    },
+    getPersonData() {
+      const timestamp = getTime(new Date());
+      this.updateTimestamp(timestamp);
+      return {
+        uid: this.getUserUID,
+        timestamp,
+        name: this.person.name,
+        photoURL: this.getUserPhotoURL,
+        address: this.person.address,
+        country: this.getCountry,
+        countryCode: this.getCountryCode,
+        casePriority: this.casePriorityCode,
+        phoneNumber: this.person.phoneNumber,
+        request: this.person.request,
+        coordinates: this.firebaseGeoPoint
+      };
     }
   },
-  mounted() {
-    this.person.name = this.getUserName;
-    this.person.phoneNumber = this.getUserPhoneNumber;
-    this.person.address = this.getUserAddress;
-    this.person.request = this.getUserRequest;
+  async mounted() {
+    const {
+      name,
+      timestamp,
+      address,
+      country,
+      countryCode,
+      casePriority,
+      phoneNumber,
+      request,
+      coordinates
+    } = await this.getUserData(this.getUserUID);
+    this.person.name = name;
+    this.person.phoneNumber = phoneNumber;
+    this.person.address = address;
+    this.person.request = request;
+    this.casePriorityCode = casePriority;
+    this.setUserData({
+      name,
+      timestamp,
+      address,
+      country,
+      countryCode,
+      casePriority,
+      phoneNumber,
+      request,
+      coordinates
+    });
   }
 };
 </script>
