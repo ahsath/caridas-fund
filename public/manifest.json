@@ -1,0 +1,23 @@
+{
+    "name": "Caridas",
+    "short_name": "Caridas",
+    "theme_color": "#90caf9",
+    "background_color": "#121212",
+    "description": "Para todos los afectados por el coronavirus. Publica, encuentra y pide ayuda desde cualquier parte del mundo",
+    "display": "standalone",
+    "start_url": ".",
+    "lang": "es-ES",
+    "icons": [
+        {
+            "src": "./img/icons/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "./img/icons/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}
