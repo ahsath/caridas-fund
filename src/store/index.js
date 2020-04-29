@@ -22,7 +22,7 @@ export default new Vuex.Store({
         text: "Puedo esperar",
         color: "yellow  lighten-1",
         code: 3,
-        emoji: "🥺"
+        emoji: "😟"
       },
       { text: "Los que puedan", color: "blue lighten-1", code: 4, emoji: "🙏🏼" }
     ],
