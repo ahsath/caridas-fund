@@ -1,48 +1,36 @@
 import firebase from '../../../firebase'
-import { GeoFirestore } from 'geofirestore'
 
-// Create a Firestore reference
-const firestore = firebase.firestore()
+const db = firebase.firestore()
+const requestsRef = db.collection('requests')
 
-// Create a GeoFirestore reference
-const geofirestore = new GeoFirestore(firestore)
-
-// Create a requests GeoCollectionReference reference
-const requestsRef = geofirestore.collection('requests')
-
-export const getUserData = async ({ commit }, uid) => {
-    const query = requestsRef.where('uid', "==", uid)
-    const querySnapshot = await query.get()
-    if (!querySnapshot.empty) {
-        commit('setUserDocId', querySnapshot.docs[0].id)
-        const { name, timestamp, address, country, countryCode, casePriority, phoneNumber, request, coordinates } = querySnapshot.docs[0].data()
-        return Promise.resolve({ name, timestamp, address, country, countryCode, casePriority, phoneNumber, request, coordinates })
-    }
+export const getUserData = async (_, uid) => {
+    return Promise.resolve(await requestsRef.doc(uid).get())
 }
-
-export const saveUserRequest = ({ commit }, data) => {
+export const saveUserRequest = (_, data) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const docRef = await requestsRef.add(data)
-            commit('setUserDocId', docRef.id)
-            resolve('Tu solicitud se ha guardado y será visible en breve')
-        } catch (e) {
-            console.log(e);
+            await requestsRef.doc(data.uid).set(data)
+            resolve({ timestamp: data.timestamp, msg: 'Tu solicitud se ha guardado y será visible en breve' })
+        } catch {
             reject('Hubo un problema al guardar tu solicitud')
         }
     })
 }
-
-export const updateUserRequest = ({ commit, getters }, data) => {
+export const updateUserRequest = (_, data) => {
     return new Promise(async (resolve, reject) => {
-        const docRef = requestsRef.doc(getters.getUserDocId)
+        const docRef = requestsRef.doc(data.uid)
         try {
             await docRef.update(data)
-            commit('user/setUserData', data)
-            resolve('Tu solicitud se ha actualizado exitosamente')
-        } catch (e) {
-            console.log(e);
+            resolve({ timestamp: data.timestamp, msg: 'Tu solicitud se ha actualizado exitosamente' })
+        } catch {
             reject('Hubo un problema al actualizar tu solicitud')
         }
     })
+}
+export const getRequests = async () => {
+    try {
+        return Promise.resolve(await requestsRef.get())
+    } catch (e) {
+        console.log(e)
+    }
 }
