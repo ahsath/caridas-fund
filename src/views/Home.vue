@@ -1,26 +1,17 @@
 <template>
   <div class="h-min-height">
-    <v-app-bar app>
-      <v-toolbar-title>
-        <router-link to="/" class="d-flex align-center no-underline">
-          <v-icon color="primary" x-large>$vuetify.icons.values.logo</v-icon>
-          <span class="ml-2 font-weight-bold white--text">Caridas</span>
-        </router-link>
-      </v-toolbar-title>
-      <v-btn to="/acerca" tag="a" class="text--secondary normal-case ml-4" text>
-        <v-icon left>{{ mdiInformation }}</v-icon>Acerca
-      </v-btn>
-      <v-spacer></v-spacer>
-
-      <app-account-menu v-if="isLoggedIn"></app-account-menu>
-      <v-btn
-        v-else
-        color="primary"
-        class="grey--text text--darken-4 normal-case"
-        :ripple="{ 'class': 'white--text' }"
-        @click="showAppLogin({ title: 'Inicia sesión' })"
-      >Entrar</v-btn>
-    </v-app-bar>
+    <app-header>
+      <template #section:right>
+        <app-account-menu v-if="isLoggedIn"></app-account-menu>
+        <v-btn
+          v-else
+          color="primary"
+          class="grey--text text--darken-4 normal-case"
+          :ripple="{ 'class': 'white--text' }"
+          @click="showAppLogin({ title: 'Inicia sesión' })"
+        >Entrar</v-btn>
+      </template>
+    </app-header>
 
     <v-btn
       color="primary"
@@ -53,9 +44,10 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { mdiInformation, mdiHumanGreeting } from "@mdi/js";
+import { mdiHumanGreeting } from "@mdi/js";
 import IsLoading from "../components/IsLoading";
 import IsError from "../components/IsError";
+import AppHeader from "../components/AppHeader";
 
 export default {
   data: () => ({
@@ -67,7 +59,6 @@ export default {
     appLoginTitle: "",
     createRequestAfterLogin: false,
     person: {},
-    mdiInformation,
     mdiHumanGreeting
   }),
   methods: {
@@ -110,6 +101,7 @@ export default {
     marker(person) {}
   },
   components: {
+    AppHeader,
     LMap: () => ({
       component: import(
         /* webpackChunkName: "LMap.vue" */ "../components/LMap"
