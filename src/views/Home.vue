@@ -47,7 +47,7 @@
     <app-create-request ref="createRequest" v-if="isAppCreateRequestShown"></app-create-request>
     <app-person-case ref="personCase" v-if="isPersonCaseShown" :person="person"></app-person-case>
     <v-snackbar v-model="showSnack" left>{{ snackMessage }}</v-snackbar>
-    <l-map></l-map>
+    <l-map @click:marker="showAppPersonCase"></l-map>
   </div>
 </template>
 
@@ -66,6 +66,7 @@ export default {
     snackMessage: "",
     appLoginTitle: "",
     createRequestAfterLogin: false,
+    person: {},
     mdiInformation,
     mdiHumanGreeting
   }),
@@ -87,7 +88,9 @@ export default {
       this.isAppCreateRequestShown = true;
       if ("createRequest" in this.$refs) this.$refs.createRequest.open = true;
     },
-    showAppPersonCase() {
+    showAppPersonCase(person) {
+      this.person = person;
+      // this.showAppPersonCase();
       this.isPersonCaseShown = true;
       if ("personCase" in this.$refs) this.$refs.personCase.open = true;
     },
@@ -99,7 +102,8 @@ export default {
     onFailLogin(msg) {
       this.snackMessage = msg;
       this.showSnack = true;
-    }
+    },
+    marker(person) {}
   },
   components: {
     LMap: () => ({
@@ -137,28 +141,7 @@ export default {
     ...mapGetters({
       isLoggedIn: "isUserLoggedIn",
       getGeoPermission: "getGeoPermission"
-    }),
-    person() {
-      return {
-        photoURL: "https://i.pravatar.cc/200",
-        name: "Maria Girardot",
-        publishDate: "hace 2 días",
-        address: "Cra. 115B. CL. 64E",
-        location: [90, -90],
-        country: "Colombia",
-        city: "",
-        casePriority: {
-          code: 1,
-          text: "Emergencia",
-          emoji: "🚨"
-        },
-        phone: {
-          international: "+57 310 4892658"
-        },
-        request:
-          "Hola, soy una persona que desde el dia de febrero estoy sin trabajar la empresa donde trabajaba hasta el dia de hoy no me liquida y necesito para comer y pagar donde vivo soy una persona sola trabajaba para ayudarme con mis gastos y estoy sin trabajar no tengo ni plata para comer"
-      };
-    }
+    })
   }
 };
 </script>
