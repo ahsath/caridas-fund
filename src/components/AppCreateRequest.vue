@@ -127,9 +127,9 @@
               </v-form>
               <span class="font-weight-medium mr-2">Selecciona la prioridad de tu caso</span>
               <v-icon>{{ mdiHelpCircle }}</v-icon>
-              <v-radio-group v-model="casePriorityCode">
+              <v-radio-group v-model="person.casePriorityCode">
                 <v-radio
-                  v-for="({ text, color, code }, i) in getPriorityCases"
+                  v-for="({ text, color, code }, i) in getPriorityCases()"
                   :key="i"
                   :label="text"
                   :value="code"
@@ -160,26 +160,25 @@ import {
   mdiCrosshairsQuestion,
   mdiCloudAlert
 } from "@mdi/js";
-import { getTime, formatDistanceStrict, isPast } from "date-fns";
-import { es } from "date-fns/locale";
-
-// const distanceInWords = formatDistanceStrict(1587775243117, new Date(), {
-//   addSuffix: true,
-//   locale: es
-// });
+import { getTime, isPast } from "date-fns";
 
 export default {
   data: () => ({
     isFormValid: false,
     person: {
+      uid: "",
       name: "",
       address: "",
       phoneNumber: "",
+      photoURL: "",
       request: "",
-      phoneNumber: ""
+      phoneNumber: "",
+      casePriorityCode: 2,
+      timestamp: 0,
+      country: "",
+      countryCode: ""
     },
     loading: false,
-    casePriorityCode: 2,
     open: true,
     alert: {
       type: null,
@@ -203,14 +202,8 @@ export default {
     ...mapGetters({
       getUserName: "user/getUserName",
       getUserPhotoURL: "user/getUserPhotoURL",
-      getUserPhoneNumber: "user/getUserPhoneNumber",
-      getUserRequest: "user/getUserRequest",
-      getUserAddress: "user/getUserAddress",
       getCountryCode: "user/getCountryCode",
       getCountry: "user/getCountry",
-      getCoords: "user/getCoordinates",
-      getUserCasePriorityCode: "user/getUserCasePriorityCode",
-      getTimestamp: "user/getTimestamp",
       getUserUID: "user/getUserUID",
       firebaseGeoPoint: "getFirebaseGeoPoint",
       getPriorityCases: "getPriorityCases",
@@ -273,13 +266,13 @@ export default {
         : "";
     },
     isRequestPublished() {
-      return !!this.getTimestamp ? !isPast(this.getTimestamp) : true;
+      return !!this.person.timestamp ? !isPast(this.person.timestamp) : true;
     }
   },
   watch: {
     getGeoPermission: {
       immediate: true,
-      handler: function(permission) {
+      handler(permission) {
         switch (this.getGeoPermission) {
           case "granted":
             this.snackMessage = "La geolocalización está habilitada";
@@ -326,15 +319,17 @@ export default {
       "updateUserRequest",
       "getUserData"
     ]),
-    ...mapMutations("user", ["updateTimestamp", "setUserData"]),
+    ...mapMutations(["user/updateTimestamp", "user/updateGeoCoords"]),
     async publish() {
       if (this.$refs.form.validate()) {
         if (this.isGeoEnabled) {
           this.loading = true;
           try {
-            this.snackMessage = await this.saveUserRequest(
+            const { timestamp, msg } = await this.saveUserRequest(
               this.getPersonData()
             );
+            this.person.timestamp = timestamp;
+            this.snackMessage = msg;
             this.showSnack = true;
             this.loading = false;
           } catch (e) {
@@ -353,9 +348,11 @@ export default {
         if (this.isGeoEnabled) {
           this.loading = true;
           try {
-            this.snackMessage = await this.updateUserRequest(
+            const { timestamp, msg } = await this.updateUserRequest(
               this.getPersonData()
             );
+            this.person.timestamp = timestamp;
+            this.snackMessage = msg;
             this.showSnack = true;
             this.loading = false;
           } catch (e) {
@@ -373,51 +370,42 @@ export default {
       !this.loading && (this.open = false);
     },
     getPersonData() {
-      const timestamp = getTime(new Date());
-      this.updateTimestamp(timestamp);
       return {
-        uid: this.getUserUID,
-        timestamp,
+        uid: this.person.uid,
+        timestamp: getTime(new Date()),
         name: this.person.name,
-        photoURL: this.getUserPhotoURL,
+        photoURL: this.person.photoURL,
         address: this.person.address,
-        country: this.getCountry,
-        countryCode: this.getCountryCode,
-        casePriority: this.casePriorityCode,
+        country: this.person.country,
+        countryCode: this.person.countryCode,
+        casePriority: this.person.casePriorityCode,
         phoneNumber: this.person.phoneNumber,
         request: this.person.request,
         coordinates: this.firebaseGeoPoint
       };
     }
   },
-  async mounted() {
-    const {
-      name,
-      timestamp,
-      address,
-      country,
-      countryCode,
-      casePriority,
-      phoneNumber,
-      request,
-      coordinates
-    } = await this.getUserData(this.getUserUID);
-    this.person.name = name;
-    this.person.phoneNumber = phoneNumber;
-    this.person.address = address;
-    this.person.request = request;
-    this.casePriorityCode = casePriority;
-    this.setUserData({
-      name,
-      timestamp,
-      address,
-      country,
-      countryCode,
-      casePriority,
-      phoneNumber,
-      request,
-      coordinates
-    });
+  async created() {
+    const userDoc = await this.getUserData(this.getUserUID);
+    if (userDoc.exists) {
+      this.person.uid = userDoc.data().uid;
+      this.person.timestamp = userDoc.data().timestamp;
+      this.person.name = userDoc.data().name;
+      this.person.phoneNumber = userDoc.data().phoneNumber;
+      this.person.address = userDoc.data().address;
+      this.person.request = userDoc.data().request;
+      this.person.photoURL = userDoc.data().photoURL;
+      this.person.casePriorityCode = userDoc.data().casePriority;
+      this.person.country = userDoc.data().country;
+      this.person.countryCode = userDoc.data().countryCode;
+      this["user/updateGeoCoords"](userDoc.data().coordinates);
+      return;
+    }
+    this.person.name = this.getUserName;
+    this.person.uid = this.getUserUID;
+    this.person.photoURL = this.getUserPhotoURL;
+    this.person.country = this.getCountry;
+    this.person.countryCode = this.getCountryCode;
   }
 };
 </script>
