@@ -1,20 +1,15 @@
-import { setUserData, updateCountry, updateCountryCode, updateGeoCoords, updateTimestamp } from './mutations'
+import { setUserData, updateCountry, updateCountryCode, updateGeoCoords } from './mutations'
 import { setCountry, setCountryCode } from './actions'
-import { getUserPhotoURL, getUserName, getUserPhoneNumber, getUserAddress, getUserRequest, getCountryCode, getCountry, getCoordinates, getUserCasePriorityCode, getUserUID, getTimestamp } from './getters'
+import { getUserPhotoURL, getUserName, getCountryCode, getCountry, getCoordinates, getUserUID } from './getters'
 
 export default {
     namespaced: true,
     state: {
         uid: '',
-        timestamp: 0,
         name: '',
         photoURL: '',
-        address: '',
         country: '',
         countryCode: '',
-        casePriority: 2,
-        phoneNumber: '',
-        request: '',
         coordinates: {
             lat: 0,
             lng: 0
@@ -25,8 +20,7 @@ export default {
         setUserData,
         updateCountry,
         updateCountryCode,
-        updateGeoCoords,
-        updateTimestamp
+        updateGeoCoords
     },
     actions: {
         setCountry,
@@ -34,15 +28,10 @@ export default {
     },
     getters: {
         getUserPhotoURL,
-        getUserName,
-        getUserPhoneNumber,
-        getUserAddress,
-        getUserRequest,
         getCountryCode,
         getCountry,
         getCoordinates,
-        getUserCasePriorityCode,
         getUserUID,
-        getTimestamp
+        getUserName
     }
 }
