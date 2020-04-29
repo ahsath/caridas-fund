@@ -5,31 +5,28 @@
         <v-list two-line>
           <v-list-item>
             <v-list-item-avatar>
-              <v-img :src="person.photoURL"></v-img>
+              <v-img :src="person.photo"></v-img>
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title>
                 {{ person.name }}
-                <span class="text--secondary caption ml-2">{{ person.publishDate }}</span>
+                <span class="text--secondary caption ml-2">{{ publishDate }}</span>
               </v-list-item-title>
-              <v-list-item-subtitle>{{ person.casePriority.emoji }} {{ person.casePriority.text }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ person.emoji }} {{ person.identifier }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item
-            :href="`tel:${person.phone.international}`"
-            aria-label="Llamar a este número"
-          >
+          <v-list-item :href="`tel:${person.phone}`" aria-label="Llamar a este número">
             <v-list-item-icon>
               <v-icon class="text--secondary">{{ mdiCellphoneAndroid }}</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title>{{ person.phone.international }}</v-list-item-title>
+              <v-list-item-title>{{ person.phone }}</v-list-item-title>
               <v-list-item-subtitle>Teléfono</v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
               <v-btn
                 tag="a"
-                :href="`tel:${person.phone.international}`"
+                :href="`tel:${person.phone}`"
                 title="Llamar a este número"
                 aria-label="Llamar a este número"
                 icon
@@ -54,7 +51,10 @@
           <v-divider></v-divider>
           <v-list-item @click dense>
             <v-list-item-content>
-              <v-list-item-title class="text--secondary">2 comentarios</v-list-item-title>
+              <v-list-item-title class="text--secondary">
+                sin comentarios
+                <v-chip label small>Pronto</v-chip>
+              </v-list-item-title>
             </v-list-item-content>
             <v-list-item-action>
               <v-btn aria-label="Abrir comentarios" icon>
@@ -68,11 +68,15 @@
           </v-list-item>
           <v-divider></v-divider>
           <header class="text-center my-4">
-            <h4 class="title">¿Ayudaste a {{ person.name }}?</h4>
+            <h4 class="title">
+              ¿Ayudaste a {{ person.name }}?
+              <v-chip label small>Pronto</v-chip>
+            </h4>
             <v-btn
               color="primary"
               class="grey--text text--darken-4 normal-case mt-4"
               :ripple="{ 'class': 'white--text' }"
+              disabled
             >Dinos como</v-btn>
           </header>
         </v-list>
@@ -88,11 +92,12 @@ import {
   mdiCallMade,
   mdiUnfoldMoreHorizontal
 } from "@mdi/js";
+import { formatDistanceStrict } from "date-fns";
+import { es } from "date-fns/locale";
 
 export default {
   props: {
     person: {
-      type: Object,
       required: true
     }
   },
@@ -102,6 +107,14 @@ export default {
     mdiMapMarker,
     mdiCallMade,
     mdiUnfoldMoreHorizontal
-  })
+  }),
+  computed: {
+    publishDate() {
+      return formatDistanceStrict(Number(this.person.timestamp), new Date(), {
+        addSuffix: true,
+        locale: es
+      });
+    }
+  }
 };
 </script>
