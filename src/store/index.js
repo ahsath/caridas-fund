@@ -34,15 +34,13 @@ export default new Vuex.Store({
   },
   mutations: {
     updateGeoPermission: (state, permission) => state.geoPermission = permission,
-    updateNetworkConnection: (state, networkStatus) => state.networkConnection = networkStatus,
-    updateAgentCountry: (state, countryName) => state.agentCountry = countryName,
-    updateAgentCountryCode: (state, countryCode) => state.agentCountryCode = countryCode
+    updateNetworkConnection: (state, networkStatus) => state.networkConnection = networkStatus
   },
   actions: {
     enableGeolocation: ({ commit }) => {
       if ('geolocation' in navigator) getGeoCoords(geoPosSuccess, geoPosError)
       function geoPosSuccess(geoPos) {
-        commit('user/updateGeoCoords', { lat: geoPos.coords.latitude, lng: geoPos.coords.longitude })
+        commit('user/updateGeoCoords', { latitude: geoPos.coords.latitude, longitude: geoPos.coords.longitude })
         commit('updateGeoPermission', 'granted')
       }
       function geoPosError(geoPosErr) {
@@ -68,7 +66,7 @@ export default new Vuex.Store({
       }
     },
     getNetworkConnection: ({ networkConnection }) => networkConnection,
-    getPriorityCases: ({ casePriorities }) => casePriorities,
+    getPriorityCases: ({ casePriorities }) => casePriorityCode => casePriorityCode ? casePriorities.find(({ code }) => code === casePriorityCode) : casePriorities,
     getFirebaseGeoPoint: (_, getters) => new firebase.firestore.GeoPoint(getters['user/getCoordinates'].lat, getters['user/getCoordinates'].lng)
   },
 })
