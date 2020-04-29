@@ -310,6 +310,9 @@ export default {
           this.showSnack = true;
           break;
       }
+    },
+    open(val) {
+      this.$emit("open:create-request", val);
     }
   },
   methods: {
