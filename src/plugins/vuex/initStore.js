@@ -23,8 +23,8 @@ export default ({ commit }) => {
             result.addEventListener('change', () => commit('updateGeoPermission', result.state))
         },
         geoCoords: geoPos => commit('user/updateGeoCoords', {
-            lat: geoPos.coords.latitude,
-            lng: geoPos.coords.longitude
+            latitude: geoPos.coords.latitude,
+            longitude: geoPos.coords.longitude
         })
     })
 
