@@ -3,7 +3,7 @@
     <v-card elevation="24">
       <v-card-title class="headline">{{ title }}</v-card-title>
       <v-card-text>
-        <v-btn class="normal-case" @click.stop="signin" light large block>
+        <v-btn class="normal-case" @click.stop="signin" light large block :loading="loading">
           <v-icon left>$vuetify.icons.values.google</v-icon>
           <div class="leading-none">Inicia sesión con Google</div>
         </v-btn>
@@ -45,6 +45,7 @@ export default {
   data: () => ({
     open: true,
     accept: false,
+    loading: false,
     errorMessage: "",
     errorMessageTemplate: "Debes aceptar los terminos y condiciones"
   }),
@@ -57,15 +58,18 @@ export default {
     ...mapActions(["signInWithPopup"]),
     async signin() {
       if (this.validateCheckbox()) {
+        this.loading = true;
         try {
           this.$emit("login:success", {
             message: await this.signInWithPopup(),
             createRequestAfterLogin: this.createRequestAfterLogin
           });
           this.open = false;
+          this.loading = false;
         } catch (error) {
           this.$emit("login:fail", error);
           this.open = false;
+          this.loading = false;
         }
       }
     },
