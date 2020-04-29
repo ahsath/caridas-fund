@@ -44,7 +44,7 @@
       :title="appLoginTitle"
       :createRequestAfterLogin="createRequestAfterLogin"
     ></app-login>
-    <app-create-request ref="createRequest" v-if="isAppCreateRequestShown"></app-create-request>
+    <app-create-request v-if="isAppCreateRequestShown" @open:create-request="createRequest"></app-create-request>
     <app-person-case ref="personCase" v-if="isPersonCaseShown" :person="person"></app-person-case>
     <v-snackbar v-model="showSnack" left>{{ snackMessage }}</v-snackbar>
     <l-map @click:marker="showAppPersonCase"></l-map>
@@ -77,6 +77,11 @@ export default {
       this.isAppLoginShown = true;
       if ("login" in this.$refs) this.$refs.login.open = true;
     },
+    createRequest(val) {
+      setTimeout(() => {
+        this.isAppCreateRequestShown = val;
+      }, 200);
+    },
     showAppCreateRequest() {
       if (!this.isLoggedIn) {
         this.showAppLogin({
@@ -86,7 +91,6 @@ export default {
         return;
       }
       this.isAppCreateRequestShown = true;
-      if ("createRequest" in this.$refs) this.$refs.createRequest.open = true;
     },
     showAppPersonCase(person) {
       this.person = person;
