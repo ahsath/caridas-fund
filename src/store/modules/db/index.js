@@ -1,20 +1,10 @@
-import { setUserDocId } from './mutations'
-import { getUserData, saveUserRequest, updateUserRequest } from './actions'
-import { getUserDocId } from './getters'
+import { getUserData, saveUserRequest, updateUserRequest, getRequests } from './actions'
 
 export default {
-    state: {
-        userDocId: ''
-    },
-    mutations: {
-        setUserDocId
-    },
     actions: {
         getUserData,
         saveUserRequest,
-        updateUserRequest
-    },
-    getters: {
-        getUserDocId
+        updateUserRequest,
+        getRequests
     }
 }
