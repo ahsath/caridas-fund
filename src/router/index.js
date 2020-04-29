@@ -17,7 +17,12 @@ const router = new VueRouter({
       path: '/terminos-y-condiciones',
       name: 'Terms and conditions',
       component: () => import(/* webpackChunkName: "Term&Conditions.vue" */ '../views/TermsAndConditions.vue')
-    }
+    },
+    {
+      path: '/acerca',
+      name: 'About',
+      component: () => import(/* webpackChunkName: "About.vue" */ '../views/About.vue')
+    },
   ]
 })
 
