@@ -8,11 +8,9 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
-    "circular-std": "^1.0.3",
     "core-js": "^3.6.4",
     "date-fns": "^2.12.0",
     "firebase": "^7.14.0",
-    "geofirestore": "^3.4.1",
     "leaflet": "^1.6.0",
     "libphonenumber-js": "^1.7.50",
     "register-service-worker": "^1.7.1",
