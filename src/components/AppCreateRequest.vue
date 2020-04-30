@@ -125,8 +125,10 @@
                 ]"
                 ></v-textarea>
               </v-form>
-              <span class="font-weight-medium mr-2">Selecciona la prioridad de tu caso</span>
-              <v-icon>{{ mdiHelpCircle }}</v-icon>
+              <h1 class="title font-weight-medium mt-3">Selecciona la prioridad de tu caso</h1>
+              <div
+                class="caption text--secondary"
+              >La prioridad de tu caso define la urgencia de la solicitud, estas son marcadas con diferentes emojis en el mapa para transmitir una prioridad.</div>
               <v-radio-group v-model="person.casePriorityCode">
                 <v-radio
                   v-for="({ text, color, code }, i) in getPriorityCases()"
