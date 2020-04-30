@@ -15,12 +15,15 @@
               <v-list-item-subtitle>{{ person.emoji }} {{ person.identifier }}</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item :href="`tel:${person.phone}`" aria-label="Llamar a este número">
+          <v-list-item
+            :href="`tel:${person.callingCode} ${person.phone}`"
+            aria-label="Llamar a este número"
+          >
             <v-list-item-icon>
               <v-icon class="text--secondary">{{ mdiCellphoneAndroid }}</v-icon>
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title>{{ person.phone }}</v-list-item-title>
+              <v-list-item-title>{{ person.callingCode }} {{ person.phone }}</v-list-item-title>
               <v-list-item-subtitle>Teléfono</v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
