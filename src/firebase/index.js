@@ -6,14 +6,14 @@ import "firebase/auth";
 import "firebase/firestore"
 
 firebase.initializeApp({
-    apiKey: "AIzaSyCk1ANWeZQ24e8ItnH1JyUJp0dgry2UIqU",
-    authDomain: "caridas-fund.firebaseapp.com",
-    databaseURL: "https://caridas-fund.firebaseio.com",
-    projectId: "caridas-fund",
-    storageBucket: "caridas-fund.appspot.com",
-    messagingSenderId: "624252173797",
-    appId: "1:624252173797:web:a7d451df926c15c832430c",
-    measurementId: "G-YX79SM85F4"
+    apiKey: "AIzaSyCO7hSRt8D2Lg-IEOVNQWl7M0yInq8Z-m4",
+    authDomain: "app.caridas.fund",
+    databaseURL: "https://caridas-49c30.firebaseio.com",
+    projectId: "caridas-49c30",
+    storageBucket: "caridas-49c30.appspot.com",
+    messagingSenderId: "444448385849",
+    appId: "1:444448385849:web:f9124dbc32f0b8d06616e8",
+    measurementId: "G-CNC79REFL2"
 });
 
 export default firebase
