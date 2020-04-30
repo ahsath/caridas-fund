@@ -85,7 +85,6 @@ export default {
     },
     showAppPersonCase(person) {
       this.person = person;
-      // this.showAppPersonCase();
       this.isPersonCaseShown = true;
       if ("personCase" in this.$refs) this.$refs.personCase.open = true;
     },
