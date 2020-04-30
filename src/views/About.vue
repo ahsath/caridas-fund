@@ -35,13 +35,6 @@
                 title="PayPal: ¡la forma más segura y fácil de pagar en línea!"
                 alt="Donar con el boton de PayPal"
               />
-              <!-- <img
-                alt
-                border="0"
-                src="https://www.paypal.com/en_CO/i/scr/pixel.gif"
-                width="1"
-                height="1"
-              />-->
             </form>
           </v-card-text>
           <v-card-text>
