@@ -4,6 +4,7 @@ const db = firebase.firestore()
 const requestsRef = db.collection('requests')
 
 export const getUserData = async (_, uid) => {
+    // Add better error handling
     return Promise.resolve(await requestsRef.doc(uid).get())
 }
 export const saveUserRequest = (_, data) => {
