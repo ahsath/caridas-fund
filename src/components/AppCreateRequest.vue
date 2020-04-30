@@ -175,6 +175,7 @@ export default {
       photoURL: "",
       request: "",
       phoneNumber: "",
+      callingCode: "",
       casePriorityCode: 2,
       timestamp: 0,
       country: "",
@@ -207,6 +208,7 @@ export default {
       getCountryCode: "user/getCountryCode",
       getCountry: "user/getCountry",
       getUserUID: "user/getUserUID",
+      getCallingCode: "user/getCallingCode",
       firebaseGeoPoint: "getFirebaseGeoPoint",
       getPriorityCases: "getPriorityCases",
       isGeoEnabled: "isGeoEnabled",
@@ -385,6 +387,7 @@ export default {
         countryCode: this.person.countryCode,
         casePriority: this.person.casePriorityCode,
         phoneNumber: this.person.phoneNumber,
+        callingCode: this.getCallingCode,
         request: this.person.request,
         coordinates: this.firebaseGeoPoint
       };
@@ -398,6 +401,7 @@ export default {
       this.person.timestamp = userDoc.data().timestamp;
       this.person.name = userDoc.data().name;
       this.person.phoneNumber = userDoc.data().phoneNumber;
+      this.person.callingCode = userDoc.data().callingCode;
       this.person.address = userDoc.data().address;
       this.person.request = userDoc.data().request;
       this.person.photoURL = userDoc.data().photoURL;
