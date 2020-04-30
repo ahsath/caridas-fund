@@ -1,3 +1,6 @@
+const path = require('path')
+const PrerenderSPAPlugin = require('prerender-spa-plugin')
+
 module.exports = {
   "transpileDependencies": [
     "vuetify"
@@ -11,5 +14,13 @@ module.exports = {
     workboxOptions: {
       skipWaiting: true
     }
+  },
+  configureWebpack: {
+    plugins: [
+      new PrerenderSPAPlugin({
+        staticDir: path.join(__dirname, 'dist'),
+        routes: ['/acerca', '/terminos-y-condiciones']
+      })
+    ]
   }
 }
