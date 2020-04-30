@@ -80,11 +80,20 @@
 .h-5 {
     height: 1.25rem;
 }
+.top-0 {
+    top: 0;
+}
+.left-0 {
+    left: 0;
+}
 .-right-5px {
     right: -5px;
 }
 .-top-10px {
     top: -10px
+}
+.fixed {
+    position: fixed;
 }
 
 
