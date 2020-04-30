@@ -1,3 +1,5 @@
 <template>
-  <div style="position: fixed; left: 50%; top: 50%; font-size: 48px; color: white">Error!</div>
+  <div class="fixed top-0 left-0 h-min-height w-screen d-flex justify-center align-center">
+    <h1>Hubo un error al cargar la aplicación</h1>
+  </div>
 </template>
