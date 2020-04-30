@@ -389,6 +389,7 @@ export default {
     }
   },
   async created() {
+    // Add better error handling
     const userDoc = await this.getUserData(this.getUserUID);
     if (userDoc.exists) {
       this.person.uid = userDoc.data().uid;
