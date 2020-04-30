@@ -108,7 +108,7 @@ export default {
       ),
       loading: IsLoading,
       error: IsError,
-      timeout: 3000
+      timeout: 6000
     }),
     AppLogin: () =>
       import(/* webpackChunkName: "AppLogin.vue" */ "../components/AppLogin"),
