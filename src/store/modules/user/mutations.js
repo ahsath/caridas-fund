@@ -10,3 +10,4 @@ export const updateGeoCoords = (state, coords) => {
 }
 export const updateCountry = (state, country) => state.country = country
 export const updateCountryCode = (state, countryCode) => state.countryCode = countryCode
+export const updateCallingCode = (state, callingCode) => state.callingCode = callingCode 
