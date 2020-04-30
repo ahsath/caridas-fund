@@ -36,7 +36,11 @@ export default {
   },
   methods: {
     ...mapActions(["getRequests"]),
-    ...mapMutations("user", ["updateCountry", "updateCountryCode"]),
+    ...mapMutations("user", [
+      "updateCountry",
+      "updateCountryCode",
+      "updateCallingCode"
+    ]),
     init() {
       this.l.map = L.map("map", {
         attributionControl: false,
@@ -104,11 +108,17 @@ export default {
       try {
         // to do: add apiKey to .prod.env
         const res = await fetch(
-          "https://api.ipgeolocation.io/ipgeo?apiKey=2f662d1df7294c74a4c92d38e1c13644&fields=geo"
+          "https://api.ipgeolocation.io/ipgeo?apiKey=2f662d1df7294c74a4c92d38e1c13644&fields=country_name,country_code2,latitude,longitude,calling_code"
         );
         if (res.ok && res.status === 200) {
           const data = await res.json();
-          const { country_name, country_code2, latitude, longitude } = data;
+          const {
+            country_name,
+            country_code2,
+            latitude,
+            longitude,
+            calling_code
+          } = data;
           if (!!this.getUserCoords.lat === false) {
             this.l.lat = latitude;
             this.l.lng = longitude;
@@ -119,6 +129,7 @@ export default {
           this.init();
           this.updateCountry(country_name);
           this.updateCountryCode(country_code2);
+          this.updateCallingCode(calling_code);
         }
       } catch (e) {
         console.log(e);
