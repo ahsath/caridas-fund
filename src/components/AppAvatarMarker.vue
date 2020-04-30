@@ -10,6 +10,7 @@
     :data-address="person.address"
     :data-country="person.country"
     :data-request="person.request"
+    :data-calling-code="person.callingCode"
   >
     <v-avatar class="border-2 border-solid border-dark rounded-full" size="36">
       <img :src="person.photoURL" :alt="person.name" />
@@ -47,11 +48,6 @@ export default {
     person: {
       type: Object,
       required: true
-    }
-  },
-  methods: {
-    alertt() {
-      alert(this.person.name);
     }
   },
   computed: {
