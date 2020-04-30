@@ -1,6 +1,6 @@
-import { setUserData, updateCountry, updateCountryCode, updateGeoCoords } from './mutations'
+import { setUserData, updateCountry, updateCountryCode, updateGeoCoords, updateCallingCode } from './mutations'
 import { setCountry, setCountryCode } from './actions'
-import { getUserPhotoURL, getUserName, getCountryCode, getCountry, getCoordinates, getUserUID } from './getters'
+import { getUserPhotoURL, getUserName, getCountryCode, getCountry, getCoordinates, getUserUID, getCallingCode } from './getters'
 
 export default {
     namespaced: true,
@@ -10,6 +10,7 @@ export default {
         photoURL: '',
         country: '',
         countryCode: '',
+        callingCode: '',
         coordinates: {
             lat: 0,
             lng: 0
@@ -20,7 +21,8 @@ export default {
         setUserData,
         updateCountry,
         updateCountryCode,
-        updateGeoCoords
+        updateGeoCoords,
+        updateCallingCode
     },
     actions: {
         setCountry,
@@ -32,6 +34,7 @@ export default {
         getCountry,
         getCoordinates,
         getUserUID,
-        getUserName
+        getUserName,
+        getCallingCode
     }
 }
