@@ -96,8 +96,7 @@ export default {
     onFailLogin(msg) {
       this.snackMessage = msg;
       this.showSnack = true;
-    },
-    marker(person) {}
+    }
   },
   components: {
     AppHeader,
