@@ -1,1 +1,1 @@
-export default (success, err) => navigator.geolocation.getCurrentPosition(success, err, { enableHighAccuracy: true })
+export default (success, err) => navigator.geolocation.getCurrentPosition(success, err)
