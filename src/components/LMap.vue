@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import "leaflet/dist/leaflet.css";
 import L, { Marker, DivIcon } from "leaflet";
 import AppAvatarMarker from "./AppAvatarMarker.vue";
@@ -35,12 +35,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(["getRequests"]),
-    ...mapMutations("user", [
-      "updateCountry",
-      "updateCountryCode",
-      "updateCallingCode"
-    ]),
+    ...mapActions(["getRequests", "findIPGeolocation"]),
     init() {
       this.l.map = L.map("map", {
         attributionControl: false,
@@ -106,31 +101,15 @@ export default {
   async created() {
     if (this.getNetworkConnection === "online") {
       try {
-        // to do: add apiKey to .prod.env
-        const res = await fetch(
-          "https://api.ipgeolocation.io/ipgeo?apiKey=2f662d1df7294c74a4c92d38e1c13644&fields=country_name,country_code2,latitude,longitude,calling_code"
-        );
-        if (res.ok && res.status === 200) {
-          const data = await res.json();
-          const {
-            country_name,
-            country_code2,
-            latitude,
-            longitude,
-            calling_code
-          } = data;
-          if (!!this.getUserCoords.lat === false) {
-            this.l.lat = latitude;
-            this.l.lng = longitude;
-          } else {
-            this.l.lat = this.getUserCoords.lat;
-            this.l.lng = this.getUserCoords.lng;
-          }
-          this.init();
-          this.updateCountry(country_name);
-          this.updateCountryCode(country_code2);
-          this.updateCallingCode(calling_code);
+        const { latitude, longitude } = await this.findIPGeolocation();
+        if (!!this.getUserCoords.lat === false) {
+          this.l.lat = latitude;
+          this.l.lng = longitude;
+        } else {
+          this.l.lat = this.getUserCoords.lat;
+          this.l.lng = this.getUserCoords.lng;
         }
+        this.init();
       } catch (e) {
         console.log(e);
       }
