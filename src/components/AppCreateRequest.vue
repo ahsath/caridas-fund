@@ -65,7 +65,7 @@
                 color="primary"
                 dense
                 text
-              >Si estas publicado pero no te ves en el mapa o tu ubicación es errónea, elimina el acceso a la ubicación, habilitala nuevamente y haz click en actualizar</v-alert>
+              >Si estas publicad@ pero no te ves en el mapa o tu ubicación es errónea, elimina el acceso a la ubicación, habilitala nuevamente y haz click en actualizar</v-alert>
               <v-form v-model="isFormValid" ref="form">
                 <v-text-field
                   v-model="person.name"
