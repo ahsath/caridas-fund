@@ -51,6 +51,21 @@
                 text
                 :icon="alert.icon"
               >{{ alert.msg }}</v-alert>
+              <v-alert
+                border="left"
+                type="info"
+                color="primary"
+                dense
+                text
+              >Las personas que no puedan publicar o actualizar su información de contacto deben tener habilitado la geolocalización del dispositivo</v-alert>
+              <v-alert
+                border="left"
+                type="info"
+                :icon="mdiStar"
+                color="primary"
+                dense
+                text
+              >Si estas publicado pero no te ves en el mapa o tu ubicación es errónea, elimina el acceso a la ubicación, habilitala nuevamente y haz click en actualizar</v-alert>
               <v-form v-model="isFormValid" ref="form">
                 <v-text-field
                   v-model="person.name"
@@ -160,7 +175,8 @@ import {
   mdiMapMarkerOff,
   mdiCrosshairsOff,
   mdiCrosshairsQuestion,
-  mdiCloudAlert
+  mdiCloudAlert,
+  mdiStar
 } from "@mdi/js";
 import { getTime, isPast } from "date-fns";
 
@@ -199,7 +215,8 @@ export default {
     mdiMapMarkerOff,
     mdiCrosshairsOff,
     mdiCrosshairsQuestion,
-    mdiCloudAlert
+    mdiCloudAlert,
+    mdiStar
   }),
   computed: {
     ...mapGetters({
@@ -246,14 +263,6 @@ export default {
         this.alert.type = "error";
         this.alert.color = "red lighten-3";
         this.alert.icon = this.mdiCloudAlert;
-        return true;
-      }
-      if (!this.getUserCoords.lat) {
-        this.alert.msg =
-          "No pudimos obtener tu geolocalización, actualiza tu navegador e intenta nuevamente";
-        this.alert.type = "error";
-        this.alert.color = "red lighten-3";
-        this.alert.icon = this.mdiCrosshairsQuestion;
         return true;
       }
       return false;
