@@ -11,7 +11,7 @@
         color="primary"
         class="grey--text text--darken-4 normal-case"
         :ripple="{ 'class': 'white--text' }"
-        :disabled="!isGeoSupported || isGeoPermissionDenied || isPositionUnavailable || !isFormValid || !isGeoEnabled || getNetworkConnection === 'offline'"
+        :disabled="!isGeoSupported || isGeoPermissionDenied || isPositionUnavailable || !isFormValid || !isGeoEnabled || getNetworkConnection === 'offline' || isPositionUnknown"
         :loading="loading"
         @click="publish"
       >Publicar</v-btn>
@@ -20,7 +20,7 @@
         color="primary"
         class="grey--text text--darken-4 normal-case"
         :ripple="{ 'class': 'white--text' }"
-        :disabled="!isGeoSupported || isGeoPermissionDenied || isPositionUnavailable || !isFormValid || !isGeoEnabled || getNetworkConnection === 'offline'"
+        :disabled="!isGeoSupported || isGeoPermissionDenied || isPositionUnavailable || !isFormValid || !isGeoEnabled || getNetworkConnection === 'offline' || isPositionUnknown"
         :loading="loading"
         @click="update"
       >Actualizar</v-btn>
@@ -209,6 +209,7 @@ export default {
       getCountry: "user/getCountry",
       getUserUID: "user/getUserUID",
       getCallingCode: "user/getCallingCode",
+      getUserCoords: "user/getCoordinates",
       firebaseGeoPoint: "getFirebaseGeoPoint",
       getPriorityCases: "getPriorityCases",
       isGeoEnabled: "isGeoEnabled",
@@ -247,6 +248,14 @@ export default {
         this.alert.icon = this.mdiCloudAlert;
         return true;
       }
+      if (!this.getUserCoords.lat) {
+        this.alert.msg =
+          "No pudimos obtener tu geolocalización, actualiza tu navegador e intenta nuevamente";
+        this.alert.type = "error";
+        this.alert.color = "red lighten-3";
+        this.alert.icon = this.mdiCrosshairsQuestion;
+        return true;
+      }
       return false;
     },
     isGeoSupported() {
@@ -260,6 +269,9 @@ export default {
     },
     isPositionUnavailable() {
       return this.getGeoPermission === "POSITION_UNAVAILABLE";
+    },
+    isPositionUnknown() {
+      return !this.getUserCoords.lat ? true : false;
     },
     showBanner() {
       return this.isGeoSupported === !this.isGeoEnabled;
