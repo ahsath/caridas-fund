@@ -15,6 +15,7 @@
     <v-avatar class="border-2 border-solid border-dark rounded-full" size="36">
       <img :src="person.photoURL" :alt="person.name" />
     </v-avatar>
+    <span class="absolute -top-10px -right-5px title w-5 h-5">{{ emoji }}</span>
   </div>
 </template>
 
