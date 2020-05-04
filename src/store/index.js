@@ -71,7 +71,7 @@ export default new Vuex.Store({
           commit('user/updateCountry', country_name)
           commit('user/updateCallingCode', calling_code)
           commit('user/updateCountryCode', country_code2)
-          return Promise.resolve({ latitude, longitude })
+          return Promise.resolve({ lat: Number(latitude), lng: Number(longitude) })
         }
       } catch (e) {
         console.log(e);
@@ -90,8 +90,6 @@ export default new Vuex.Store({
     },
     getNetworkConnection: ({ networkConnection }) => networkConnection,
     getPriorityCases: ({ casePriorities }) => casePriorityCode => casePriorityCode ? casePriorities.find(({ code }) => code === casePriorityCode) : casePriorities,
-    getFirebaseGeoPoint: (_, getters) => {
-      return new firebase.firestore.GeoPoint(getters['user/getCoordinates'].lat, getters['user/getCoordinates'].lng)
-    }
+    getFirebaseGeoPoint: (_, getters) => new firebase.firestore.GeoPoint(getters['user/getCoordinates'].lat, getters['user/getCoordinates'].lng),
   },
 })
