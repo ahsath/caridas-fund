@@ -38,18 +38,35 @@
     <app-create-request v-if="isAppCreateRequestShown" @open:create-request="createRequest"></app-create-request>
     <app-person-case ref="personCase" v-if="isPersonCaseShown" :person="person"></app-person-case>
     <v-snackbar v-model="showSnack" left>{{ snackMessage }}</v-snackbar>
+    <div v-if="showAlert" class="fixed z-3 right-0 left-0 pa-4" style="top:70px">
+      <v-alert
+        class="mx-auto"
+        border="left"
+        elevation="12"
+        max-width="600"
+        width="100%"
+        :icon="mdiInformation"
+        dismissible
+        @input="showAlert = $event"
+      >
+        ¡Hola! Estamos solucionando algunos problemas de geolocalización. Si tienes alguna pregunta o sugerencia, preguntame en
+        <v-icon color="primary" class="mr-1" aria-label="Preguntame en Twitter">{{ mdiTwitter }}</v-icon>
+        <a href="https://twitter.com/aahrit">Twitter</a>
+      </v-alert>
+    </div>
     <l-map @click:marker="showAppPersonCase"></l-map>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import { mdiHumanGreeting } from "@mdi/js";
+import { mdiHumanGreeting, mdiInformation, mdiTwitter } from "@mdi/js";
 import IsLoading from "../components/IsLoading";
 import IsError from "../components/IsError";
 import AppHeader from "../components/AppHeader";
 
 export default {
+  name: "Home",
   data: () => ({
     isAppLoginShown: false,
     isAppCreateRequestShown: false,
@@ -59,7 +76,10 @@ export default {
     appLoginTitle: "",
     createRequestAfterLogin: false,
     person: {},
-    mdiHumanGreeting
+    showAlert: true,
+    mdiHumanGreeting,
+    mdiInformation,
+    mdiTwitter
   }),
   methods: {
     showAppLogin({ title = "Inicia sesión", createRequestAfterLogin = false }) {
