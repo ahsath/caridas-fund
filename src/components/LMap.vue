@@ -101,10 +101,10 @@ export default {
   async created() {
     if (this.getNetworkConnection === "online") {
       try {
-        const { latitude, longitude } = await this.findIPGeolocation();
-        if (!!this.getUserCoords.lat === false) {
-          this.l.lat = latitude;
-          this.l.lng = longitude;
+        const { lat, lng } = await this.findIPGeolocation();
+        if (!this.getUserCoords.lat) {
+          this.l.lat = lat;
+          this.l.lng = lng;
         } else {
           this.l.lat = this.getUserCoords.lat;
           this.l.lng = this.getUserCoords.lng;
