@@ -53,6 +53,29 @@ export default new Vuex.Store({
             break;
         }
       }
+    },
+    findIPGeolocation: async ({ commit }) => {
+      try {
+        // to do: add apiKey to .prod.env
+        const res = await fetch(
+          "https://api.ipgeolocation.io/ipgeo?apiKey=2f662d1df7294c74a4c92d38e1c13644&fields=country_name,country_code2,latitude,longitude,calling_code"
+        );
+        if (res.ok && res.status === 200) {
+          const {
+            country_name,
+            country_code2,
+            latitude,
+            longitude,
+            calling_code
+          } = await res.json()
+          commit('user/updateCountry', country_name)
+          commit('user/updateCallingCode', calling_code)
+          commit('user/updateCountryCode', country_code2)
+          return Promise.resolve({ latitude, longitude })
+        }
+      } catch (e) {
+        console.log(e);
+      }
     }
   },
   getters: {
@@ -67,6 +90,8 @@ export default new Vuex.Store({
     },
     getNetworkConnection: ({ networkConnection }) => networkConnection,
     getPriorityCases: ({ casePriorities }) => casePriorityCode => casePriorityCode ? casePriorities.find(({ code }) => code === casePriorityCode) : casePriorities,
-    getFirebaseGeoPoint: (_, getters) => new firebase.firestore.GeoPoint(getters['user/getCoordinates'].lat, getters['user/getCoordinates'].lng)
+    getFirebaseGeoPoint: (_, getters) => {
+      return new firebase.firestore.GeoPoint(getters['user/getCoordinates'].lat, getters['user/getCoordinates'].lng)
+    }
   },
 })
